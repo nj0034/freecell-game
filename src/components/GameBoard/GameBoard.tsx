@@ -4,7 +4,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { GameState } from '../../types/game.types';
 import { initializeGame, checkWinCondition } from '../../utils/gameLogic';
-import { findSafeAutoMoves } from '../../utils/safeAutoMove';
+import { performCascadingSafeAutoMoves } from '../../utils/safeAutoMove';
 import { executeAutoMove } from '../../utils/autoMove';
 import { 
   GameHistory, 
@@ -123,11 +123,11 @@ export const GameBoard: React.FC = () => {
   };
 
   const handleSafeAutoMove = () => {
-    const safeMoves = findSafeAutoMoves(gameState);
+    const cascadingMoves = performCascadingSafeAutoMoves(gameState);
     
-    if (safeMoves.length > 0) {
+    if (cascadingMoves.length > 0) {
       // 애니메이션을 위해 순차적으로 이동 수행
-      safeMoves.forEach((move, index) => {
+      cascadingMoves.forEach((move, index) => {
         setTimeout(() => {
           updateGameState(prevState => {
             const newState = executeAutoMove(
@@ -137,11 +137,13 @@ export const GameBoard: React.FC = () => {
               prevState
             );
             
-            console.log(`Safe auto-move: ${move.card.rank} of ${move.card.suit} to foundation`);
+            console.log(`Auto-move: ${move.card.rank} of ${move.card.suit} to foundation`);
             return newState;
           });
         }, index * 200); // 각 이동 사이 200ms 딜레이
       });
+      
+      console.log(`Performing ${cascadingMoves.length} cascading auto-moves`);
     } else {
       console.log('No safe auto-moves available');
     }
@@ -174,10 +176,10 @@ export const GameBoard: React.FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <BoardContainer>
-        <TestControls 
+        {/* <TestControls 
           gameState={gameState}
           setGameState={updateGameState}
-        />
+        /> */}
         
         <motion.div
           variants={boardVariants}

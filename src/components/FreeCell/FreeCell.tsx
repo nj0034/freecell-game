@@ -10,15 +10,15 @@ const FreeCellSlot = styled.div<{ isOver: boolean; canDrop: boolean; isEmpty: bo
   width: 90px;
   height: 125px;
   background: ${props => 
-    props.isOver && props.canDrop ? 'rgba(76, 175, 80, 0.3)' :
-    props.isOver ? 'rgba(244, 67, 54, 0.3)' :
-    props.isEmpty ? 'rgba(255, 255, 255, 0.1)' :
+    props.isOver && props.canDrop ? props.theme.primaryColor + '4d' :
+    props.isOver ? props.theme.accentColor + '4d' :
+    props.isEmpty ? props.theme.boardBackground :
     'transparent'
   };
   border: 2px solid ${props => 
-    props.isOver && props.canDrop ? '#4CAF50' :
-    props.isOver ? '#f44336' :
-    'rgba(255, 255, 255, 0.3)'
+    props.isOver && props.canDrop ? props.theme.primaryColor :
+    props.isOver ? props.theme.accentColor :
+    props.theme.cardBorder
   };
   border-radius: 8px;
   display: flex;
@@ -28,7 +28,7 @@ const FreeCellSlot = styled.div<{ isOver: boolean; canDrop: boolean; isEmpty: bo
   transition: all 0.3s ease;
   
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: ${props => props.theme.boardBackground};
     transform: scale(1.02);
   }
   
@@ -36,7 +36,8 @@ const FreeCellSlot = styled.div<{ isOver: boolean; canDrop: boolean; isEmpty: bo
     content: 'Free';
     position: absolute;
     font-size: 0.8em;
-    color: rgba(255, 255, 255, 0.2);
+    color: ${props => props.theme.text};
+    opacity: 0.2;
     font-weight: bold;
     letter-spacing: 1px;
     display: ${props => props.isEmpty ? 'block' : 'none'};

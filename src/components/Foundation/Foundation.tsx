@@ -10,14 +10,14 @@ const FoundationSlot = styled.div<{ isOver: boolean; canDrop: boolean; suit?: Su
   width: 90px;
   height: 125px;
   background: ${props => 
-    props.isOver && props.canDrop ? 'rgba(76, 175, 80, 0.4)' :
-    props.isOver ? 'rgba(244, 67, 54, 0.3)' :
-    'rgba(255, 255, 255, 0.15)'
+    props.isOver && props.canDrop ? props.theme.primaryColor + '66' :
+    props.isOver ? props.theme.accentColor + '4d' :
+    props.theme.boardBackground
   };
   border: 2px solid ${props => 
-    props.isOver && props.canDrop ? '#4CAF50' :
-    props.isOver ? '#f44336' :
-    'rgba(255, 255, 255, 0.4)'
+    props.isOver && props.canDrop ? props.theme.primaryColor :
+    props.isOver ? props.theme.accentColor :
+    props.theme.cardBorder
   };
   border-radius: 8px;
   display: flex;
@@ -39,14 +39,15 @@ const FoundationSlot = styled.div<{ isOver: boolean; canDrop: boolean; suit?: Su
     }}';
     position: absolute;
     font-size: 3em;
-    color: rgba(255, 255, 255, 0.1);
+    color: ${props => props.theme.text};
+    opacity: 0.1;
     z-index: 0;
   }
   
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: ${props => props.theme.boardBackground};
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px ${props => props.theme.shadowColor};
   }
 `;
 

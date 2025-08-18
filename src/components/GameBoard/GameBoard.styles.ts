@@ -3,20 +3,22 @@ import { motion } from 'framer-motion';
 
 export const BoardContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: ${props => props.theme.background};
   padding: 20px;
   position: relative;
   overflow: hidden;
+  transition: background 0.3s ease;
 `;
 
 export const GameArea = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: ${props => props.theme.boardBackground};
   border-radius: 20px;
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  box-shadow: 0 8px 32px 0 ${props => props.theme.shadowColor};
+  transition: all 0.3s ease;
 `;
 
 export const TopSection = styled.div`
@@ -24,8 +26,9 @@ export const TopSection = styled.div`
   justify-content: space-between;
   margin-bottom: 40px;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  background: ${props => props.theme.boardBackground};
   border-radius: 15px;
+  transition: background 0.3s ease;
   
   .free-cells, .foundations {
     display: flex;
@@ -38,9 +41,10 @@ export const BottomSection = styled.div`
   grid-template-columns: repeat(8, 1fr);
   gap: 15px;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  background: ${props => props.theme.boardBackground};
   border-radius: 15px;
   min-height: 500px;
+  transition: background 0.3s ease;
 `;
 
 export const WinOverlay = styled(motion.div)`
@@ -49,7 +53,7 @@ export const WinOverlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: ${props => props.theme.overlayBackground};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,40 +61,39 @@ export const WinOverlay = styled(motion.div)`
 `;
 
 export const WinMessage = styled.div`
-  background: white;
+  background: ${props => props.theme.cardBackground};
   padding: 40px;
   border-radius: 20px;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px ${props => props.theme.shadowColor};
   
   h1 {
     font-size: 3em;
     margin-bottom: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: ${props => props.theme.primaryColor};
   }
   
   p {
     font-size: 1.2em;
     margin: 10px 0;
-    color: #333;
+    color: ${props => props.theme.text};
   }
   
   button {
     margin-top: 30px;
     padding: 15px 40px;
     font-size: 1.2em;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: ${props => props.theme.buttonBackground};
+    color: ${props => props.theme.buttonText};
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px ${props => props.theme.shadowColor};
     transition: all 0.3s ease;
     
     &:hover {
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      background: ${props => props.theme.buttonHoverBackground};
+      box-shadow: 0 6px 20px ${props => props.theme.shadowColor};
     }
   }
 `;

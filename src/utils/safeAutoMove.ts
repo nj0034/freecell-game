@@ -113,6 +113,54 @@ export const findSafeAutoMoves = (gameState: GameState): Array<{
 };
 
 /**
+ * 특정 파운데이션에 순차적으로 올릴 수 있는 모든 카드 찾기
+ * Safe move 조건을 무시하고 해당 파운데이션에 올릴 수 있는 모든 카드를 찾음
+ */
+export const findSequentialMovesToFoundation = (
+  gameState: GameState,
+  foundationIndex: number
+): Array<{
+  card: Card;
+  from: PileLocation;
+  to: PileLocation;
+}> => {
+  const moves: Array<{
+    card: Card;
+    from: PileLocation;
+    to: PileLocation;
+  }> = [];
+  
+  const foundation = gameState.foundations[foundationIndex];
+  
+  // 태블로의 각 컬럼 최상위 카드 확인
+  gameState.tableau.forEach((column, columnIndex) => {
+    if (column.length > 0) {
+      const topCard = column[column.length - 1];
+      if (topCard.faceUp && canMoveCard(topCard, foundation, PileType.FOUNDATION)) {
+        moves.push({
+          card: topCard,
+          from: { type: PileType.TABLEAU, index: columnIndex },
+          to: { type: PileType.FOUNDATION, index: foundationIndex }
+        });
+      }
+    }
+  });
+
+  // 프리셀의 카드 확인
+  gameState.freeCells.forEach((card, cellIndex) => {
+    if (card && canMoveCard(card, foundation, PileType.FOUNDATION)) {
+      moves.push({
+        card: card,
+        from: { type: PileType.FREECELL, index: cellIndex },
+        to: { type: PileType.FOUNDATION, index: foundationIndex }
+      });
+    }
+  });
+
+  return moves;
+};
+
+/**
  * 모든 안전한 자동 이동 수행
  * 연속적으로 안전한 이동이 있을 때까지 반복
  */
@@ -137,4 +185,77 @@ export const performAllSafeAutoMoves = (
   }
 
   return moveCount;
+};
+
+/**
+ * 안전한 이동 후 해당 파운데이션에 순차적으로 올릴 수 있는 모든 카드 이동
+ * Safe move 조건을 무시하고 해당 파운데이션에 올릴 수 있는 카드를 모두 올림
+ */
+export const performCascadingSafeAutoMoves = (
+  gameState: GameState
+): Array<{card: Card; from: PileLocation; to: PileLocation}> => {
+  const allMoves: Array<{card: Card; from: PileLocation; to: PileLocation}> = [];
+  
+  // 게임 상태를 복사하여 시뮬레이션
+  const simulatedState = JSON.parse(JSON.stringify(gameState)) as GameState;
+  
+  // 먼저 안전한 이동 찾기
+  const safeMoves = findSafeAutoMoves(simulatedState);
+  
+  if (safeMoves.length > 0) {
+    // 첫 번째 안전한 이동 추가
+    const firstMove = safeMoves[0];
+    allMoves.push(firstMove);
+    
+    // 시뮬레이션 상태 업데이트
+    applyMoveToSimulatedState(simulatedState, firstMove);
+    
+    // 해당 파운데이션에 순차적으로 올릴 수 있는 모든 카드 찾기
+    const foundationIndex = firstMove.to.index;
+    let hasMoreSequentialMoves = true;
+    
+    while (hasMoreSequentialMoves) {
+      const sequentialMoves = findSequentialMovesToFoundation(simulatedState, foundationIndex);
+      
+      if (sequentialMoves.length > 0) {
+        // 첫 번째 순차 이동 추가
+        const nextMove = sequentialMoves[0];
+        allMoves.push(nextMove);
+        
+        // 시뮬레이션 상태 업데이트
+        applyMoveToSimulatedState(simulatedState, nextMove);
+      } else {
+        hasMoreSequentialMoves = false;
+      }
+    }
+  }
+  
+  return allMoves;
+};
+
+/**
+ * 시뮬레이션 상태에 이동 적용
+ */
+const applyMoveToSimulatedState = (
+  state: GameState,
+  move: {card: Card; from: PileLocation; to: PileLocation}
+): void => {
+  // From 위치에서 카드 제거
+  if (move.from.type === PileType.TABLEAU) {
+    const column = state.tableau[move.from.index];
+    if (column.length > 0) {
+      column.pop();
+      // 새로운 최상위 카드가 있으면 뒤집기
+      if (column.length > 0 && !column[column.length - 1].faceUp) {
+        column[column.length - 1].faceUp = true;
+      }
+    }
+  } else if (move.from.type === PileType.FREECELL) {
+    state.freeCells[move.from.index] = null;
+  }
+  
+  // To 위치에 카드 추가
+  if (move.to.type === PileType.FOUNDATION) {
+    state.foundations[move.to.index].push(move.card);
+  }
 };

@@ -10,17 +10,17 @@ export const CardContainer = styled.div<CardStyleProps>`
   width: 90px;
   height: 125px;
   border-radius: 8px;
-  background: white;
+  background: ${props => props.theme.cardBackground};
   box-shadow: ${props => props.isSelected 
-    ? '0 8px 20px rgba(0, 0, 0, 0.3)' 
-    : '0 2px 8px rgba(0, 0, 0, 0.15)'};
-  border: 2px solid ${props => props.isSelected ? '#4CAF50' : '#ddd'};
+    ? `0 8px 20px ${props.theme.shadowColor}` 
+    : `0 2px 8px ${props.theme.shadowColor}`};
+  border: 2px solid ${props => props.isSelected ? props.theme.primaryColor : props.theme.cardBorder};
   position: relative;
   transition: all 0.3s ease;
   user-select: none;
   
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px ${props => props.theme.shadowColor};
   }
 `;
 
@@ -32,7 +32,7 @@ export const CardFace = styled.div<CardStyleProps>`
   flex-direction: column;
   justify-content: space-between;
   border-radius: 8px;
-  background: linear-gradient(145deg, #ffffff, #f5f5f5);
+  background: ${props => props.theme.cardBackground};
   
   .card-header, .card-footer {
     display: flex;
@@ -56,7 +56,7 @@ export const CardBack = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: ${props => props.theme.primaryColor};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -64,14 +64,14 @@ export const CardBack = styled.div`
   .pattern {
     width: 80%;
     height: 90%;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid ${props => props.theme.cardBorder};
     border-radius: 4px;
     background-image: repeating-linear-gradient(
       45deg,
       transparent,
       transparent 10px,
-      rgba(255, 255, 255, 0.1) 10px,
-      rgba(255, 255, 255, 0.1) 20px
+      ${props => props.theme.boardBackground} 10px,
+      ${props => props.theme.boardBackground} 20px
     );
   }
 `;

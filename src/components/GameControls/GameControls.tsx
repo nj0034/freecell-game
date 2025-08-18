@@ -8,12 +8,13 @@ const ControlsContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto 20px;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: ${props => props.theme.boardBackground};
   border-radius: 15px;
   backdrop-filter: blur(10px);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: background 0.3s ease;
 `;
 
 const ButtonGroup = styled.div`
@@ -23,14 +24,14 @@ const ButtonGroup = styled.div`
 
 const ControlButton = styled(motion.button)`
   padding: 12px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: ${props => props.theme.buttonBackground};
+  color: ${props => props.theme.buttonText};
   border: none;
   border-radius: 8px;
   font-size: 1em;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px ${props => props.theme.shadowColor};
   transition: all 0.3s ease;
   
   &:disabled {
@@ -39,7 +40,8 @@ const ControlButton = styled(motion.button)`
   }
   
   &:hover:not(:disabled) {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    background: ${props => props.theme.buttonHoverBackground};
+    box-shadow: 0 6px 16px ${props => props.theme.shadowColor};
   }
 `;
 
@@ -56,7 +58,8 @@ const InfoItem = styled.div`
   
   .label {
     font-size: 0.9em;
-    color: rgba(255, 255, 255, 0.7);
+    color: ${props => props.theme.text};
+    opacity: 0.7;
     margin-bottom: 5px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -64,7 +67,7 @@ const InfoItem = styled.div`
   
   .value {
     font-size: 1.4em;
-    color: white;
+    color: ${props => props.theme.text};
     font-weight: bold;
   }
 `;
