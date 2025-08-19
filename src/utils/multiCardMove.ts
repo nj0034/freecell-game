@@ -4,11 +4,14 @@ import { canSelectCards, getMaxMovableCards } from './gameLogic';
 /**
  * 여러 카드를 한 번에 이동할 수 있는지 확인
  * 프리셀 규칙: (빈 프리셀 + 1) * 2^(빈 테이블로 컬럼)
+ * 
+ * @param targetColumnIndex - 목적지 컬럼 인덱스 (빈 컬럼 계산에서 제외하기 위해)
  */
 export const canMoveMultipleCards = (
   cards: Card[],
   fromIndex: number,
-  gameState: GameState
+  gameState: GameState,
+  targetColumnIndex?: number
 ): { canMove: boolean; maxMovable: number; numCards: number } => {
   // 1. 먼저 카드들이 연속된 시퀀스인지 확인 (교대 색상, 내림차순)
   if (!canSelectCards(cards, fromIndex)) {
@@ -22,7 +25,16 @@ export const canMoveMultipleCards = (
   const emptyFreeCells = gameState.freeCells.filter(cell => cell === null).length;
   
   // 4. 빈 테이블로 컬럼 수 계산
-  const emptyTableauColumns = gameState.tableau.filter(column => column.length === 0).length;
+  // 목적지가 빈 컬럼인 경우, 그 컬럼은 카운트에서 제외
+  let emptyTableauColumns = 0;
+  for (let i = 0; i < gameState.tableau.length; i++) {
+    if (gameState.tableau[i].length === 0) {
+      // 목적지 컬럼이 빈 경우 카운트하지 않음
+      if (targetColumnIndex === undefined || i !== targetColumnIndex) {
+        emptyTableauColumns++;
+      }
+    }
+  }
   
   // 5. 최대 이동 가능한 카드 수 계산
   const maxMovable = getMaxMovableCards(emptyFreeCells, emptyTableauColumns);
@@ -45,8 +57,8 @@ export const moveMultipleCards = (
   fromCardIndex: number,
   gameState: GameState
 ): GameState | null => {
-  // 이동 가능한지 먼저 확인
-  const moveCheck = canMoveMultipleCards(cards, fromCardIndex, gameState);
+  // 이동 가능한지 먼저 확인 (목적지 컬럼 인덱스 전달)
+  const moveCheck = canMoveMultipleCards(cards, fromCardIndex, gameState, toColumnIndex);
   if (!moveCheck.canMove) {
     console.log(`Cannot move ${moveCheck.numCards} cards - max allowed is ${moveCheck.maxMovable}`);
     return null;
@@ -120,7 +132,23 @@ export const findMultiCardDestination = (
   // 맨 아래 카드 (이동할 카드 중 첫 번째)
   const bottomCard = cardsToMove[0];
   
-  // 각 테이블로 컬럼 확인
+  // 1. 먼저 카드가 있는 컬럼 중에서 연결 가능한 곳 찾기
+  for (let i = 0; i < gameState.tableau.length; i++) {
+    // 같은 컬럼은 건너뛰기
+    if (i === fromColumnIndex) continue;
+    
+    const targetColumn = gameState.tableau[i];
+    
+    // 카드가 있는 컬럼에서 연결 가능한지 확인
+    if (targetColumn.length > 0) {
+      const topCard = targetColumn[targetColumn.length - 1];
+      if (topCard.color !== bottomCard.color && topCard.rank === bottomCard.rank + 1) {
+        return { columnIndex: i, canMove: true };
+      }
+    }
+  }
+  
+  // 2. 카드가 있는 컬럼에 연결할 수 없으면 빈 컬럼 찾기
   for (let i = 0; i < gameState.tableau.length; i++) {
     // 같은 컬럼은 건너뛰기
     if (i === fromColumnIndex) continue;
@@ -129,12 +157,6 @@ export const findMultiCardDestination = (
     
     // 빈 컬럼인 경우
     if (targetColumn.length === 0) {
-      return { columnIndex: i, canMove: true };
-    }
-    
-    // 마지막 카드와 연결 가능한지 확인
-    const topCard = targetColumn[targetColumn.length - 1];
-    if (topCard.color !== bottomCard.color && topCard.rank === bottomCard.rank + 1) {
       return { columnIndex: i, canMove: true };
     }
   }

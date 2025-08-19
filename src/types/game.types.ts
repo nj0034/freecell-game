@@ -69,16 +69,16 @@ export interface AnimationState {
 export interface GameState {
   tableau: CardStack[];        // 8개의 테이블로 컬럼
   foundations: CardStack[];    // 4개의 파운데이션
-  freeCells: (Card | null)[];  // 4개의 프리셀
+  freeCells: (Card | null)[];  // 4개의 프리셀 (Expert 모드에서는 3개)
   moveHistory: Move[];
   selectedCards: Card[];
   score: number;
   moves: number;
-  time: number;
   isGameWon: boolean;
   isAutoCompleteActive: boolean;
   testMode: boolean;           // 테스트 모드 플래그
   animationState?: AnimationState; // 애니메이션 상태
+  difficulty?: string;         // 현재 난이도 레벨
 }
 
 // 드래그 정보 인터페이스

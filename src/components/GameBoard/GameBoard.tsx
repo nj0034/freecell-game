@@ -2,27 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { GameState } from '../../types/game.types';
-import { initializeGame, checkWinCondition } from '../../utils/gameLogic';
+import { GameState, Card, CardStack } from '../../types/game.types';
+import { DifficultyLevel } from '../../utils/difficulty';
 import { performCascadingSafeAutoMoves } from '../../utils/safeAutoMove';
+import { findAllMovesToFoundations } from '../../utils/moveAllToFoundations';
 import { executeAutoMove } from '../../utils/autoMove';
-import { 
-  GameHistory, 
-  createHistory, 
-  addStateToHistory, 
-  undo as performUndo,
-  redo as performRedo,
-  updateHistoryIndex,
-  canUndo,
-  canRedo,
-  cloneGameState
-} from '../../utils/undoRedo';
+import { useGameStore } from '../../store/gameStore';
 import { Tableau } from '../Tableau/Tableau';
 import { Foundation } from '../Foundation/Foundation';
 import { FreeCell } from '../FreeCell/FreeCell';
 import { GameControls } from '../GameControls/GameControls';
-// import { TestControls } from '../TestControls/TestControls';
+import { TestControls } from '../TestControls/TestControls';
+import { TestToggle } from '../TestToggle/TestToggle';
 import { WarningMessage } from '../WarningMessage/WarningMessage';
+import { UndoMessage } from '../UndoMessage/UndoMessage';
+import { KingFaceComponent } from '../KingFace/KingFace';
 import {
   BoardContainer,
   GameArea,
@@ -34,119 +28,140 @@ import {
 } from './GameBoard.styles';
 
 export const GameBoard: React.FC = () => {
-  const initialState = initializeGame();
-  const [gameState, setGameState] = useState<GameState>(initialState);
-  const [gameHistory, setGameHistory] = useState<GameHistory>(createHistory(initialState));
-  const [showWinAnimation, setShowWinAnimation] = useState(false);
+  const {
+    gameState,
+    showWinAnimation,
+    safeMode,
+    lastUndoTime,
+    isAutoMoving,
+    updateGameState,
+    undo,
+    canUndo,
+    newGame,
+    toggleSafeMode,
+    setIsAutoMoving,
+    setShowWinAnimation
+  } = useGameStore();
+
+  const [currentDifficulty, setCurrentDifficulty] = useState<DifficultyLevel>(() => {
+    const saved = localStorage.getItem('solitaire-difficulty');
+    return (saved as DifficultyLevel) || DifficultyLevel.MEDIUM;
+  });
   const [warningMessage, setWarningMessage] = useState<{ show: boolean; maxCards: number; attemptedCards: number }>({
     show: false,
     maxCards: 0,
     attemptedCards: 0
   });
+  const [showTestControls, setShowTestControls] = useState(false);
+  const [undoMessage, setUndoMessage] = useState<{ show: boolean; type: 'success' | 'warning'; message: string }>({
+    show: false,
+    type: 'success',
+    message: ''
+  });
+  const [gameTime, setGameTime] = useState(0);
 
+  // 타이머 설정
   useEffect(() => {
-    // 타이머 설정
     const timer = setInterval(() => {
       if (!gameState.isGameWon) {
-        setGameState(prev => ({
-          ...prev,
-          time: prev.time + 1
-        }));
+        setGameTime(prev => prev + 1);
       }
     }, 1000);
 
     return () => clearInterval(timer);
   }, [gameState.isGameWon]);
 
-  useEffect(() => {
-    // 승리 조건 확인
-    if (checkWinCondition(gameState.foundations)) {
-      setGameState(prev => ({ ...prev, isGameWon: true }));
-      setShowWinAnimation(true);
+
+  const handleNewGame = (difficulty?: DifficultyLevel) => {
+    const selectedDifficulty = difficulty || currentDifficulty;
+    if (difficulty) {
+      setCurrentDifficulty(difficulty);
+      localStorage.setItem('solitaire-difficulty', difficulty);
     }
-  }, [gameState.foundations]);
-
-  // 게임 상태가 변경될 때마다 히스토리에 추가
-  const updateGameState = useCallback((newState: GameState | ((prev: GameState) => GameState)) => {
-    setGameState(prevState => {
-      const updatedState = typeof newState === 'function' ? newState(prevState) : newState;
-      
-      // 상태가 실제로 변경된 경우에만 히스토리에 추가
-      if (JSON.stringify(prevState) !== JSON.stringify(updatedState)) {
-        setGameHistory(history => addStateToHistory(history, cloneGameState(updatedState)));
-      }
-      
-      return updatedState;
-    });
-  }, []);
-
-  const handleNewGame = () => {
-    const newGame = initializeGame();
-    setGameState(newGame);
-    setGameHistory(createHistory(newGame));
-    setShowWinAnimation(false);
+    newGame(selectedDifficulty);
+    setGameTime(0); // 새 게임 시작 시 시간 초기화
   };
 
   const handleUndo = () => {
-    if (canUndo(gameHistory)) {
-      const previousState = performUndo(gameHistory);
-      if (previousState) {
-        setGameState(cloneGameState(previousState));
-        setGameHistory(history => updateHistoryIndex(history, 'undo'));
-        console.log('Undo performed');
-      }
+    const currentTime = Date.now();
+    const timeSinceLastUndo = currentTime - lastUndoTime;
+    
+    // Check if trying to undo twice within 2 seconds
+    if (timeSinceLastUndo < 2000 && lastUndoTime > 0) {
+      setUndoMessage({
+        show: true,
+        type: 'warning',
+        message: '⚠️ 연속 실행 취소는 신중하게 사용하세요!'
+      });
+      return; // Don't allow consecutive undos
     }
-  };
-
-  const handleRedo = () => {
-    if (canRedo(gameHistory)) {
-      const nextState = performRedo(gameHistory);
-      if (nextState) {
-        setGameState(cloneGameState(nextState));
-        setGameHistory(history => updateHistoryIndex(history, 'redo'));
-        console.log('Redo performed');
-      }
+    
+    const undoSuccess = undo();
+    
+    if (undoSuccess) {
+      setUndoMessage({
+        show: true,
+        type: 'success',
+        message: '↩️ 실행 취소 완료!'
+      });
+    } else {
+      setUndoMessage({
+        show: true,
+        type: 'warning',
+        message: '❌ 실행 취소할 내역이 없습니다'
+      });
     }
   };
 
   const handleHint = () => {
     // 힌트 표시 로직
-    console.log('Show hint');
   };
 
-  const handleAutoComplete = () => {
-    updateGameState(prev => ({
-      ...prev,
-      isAutoCompleteActive: true
-    }));
-    // 자동 완성 로직 구현
-  };
-
-  const handleSafeAutoMove = () => {
-    const cascadingMoves = performCascadingSafeAutoMoves(gameState);
+  const handleAutoMove = async () => {
+    if (isAutoMoving) return; // Prevent multiple auto-moves at the same time
     
-    if (cascadingMoves.length > 0) {
-      // 애니메이션을 위해 순차적으로 이동 수행
-      cascadingMoves.forEach((move, index) => {
-        setTimeout(() => {
-          updateGameState(prevState => {
+    let moves: Array<{card: any; from: any; to: any}>;
+    if (safeMode) {
+      // Safe mode: 안전한 이동만
+      moves = performCascadingSafeAutoMoves(gameState);
+    } else {
+      // Not safe mode: 모든 가능한 이동
+      moves = findAllMovesToFoundations(gameState);
+    }
+    
+    if (moves.length > 0) {
+      setIsAutoMoving(true); // Start auto-moving
+      
+      try {
+        // Execute moves one by one with animation delay
+        for (let i = 0; i < moves.length; i++) {
+          const move = moves[i];
+          
+          // Apply single move
+          updateGameState((prevState: GameState) => {
             const newState = executeAutoMove(
               move.card,
               move.from,
               move.to,
               prevState
             );
-            
-            console.log(`Auto-move: ${move.card.rank} of ${move.card.suit} to foundation`);
             return newState;
           });
-        }, index * 200); // 각 이동 사이 200ms 딜레이
-      });
-      
-      console.log(`Performing ${cascadingMoves.length} cascading auto-moves`);
-    } else {
-      console.log('No safe auto-moves available');
+          
+          // Wait for animation to complete before next move
+          if (i < moves.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 300)); // 300ms delay between moves
+          }
+        }
+        
+      } finally {
+        setIsAutoMoving(false); // End auto-moving
+      }
     }
+  };
+  
+  const handleSafeModeToggle = () => {
+    toggleSafeMode();
   };
 
   const boardVariants = {
@@ -168,7 +183,9 @@ export const GameBoard: React.FC = () => {
       scale: 1,
       transition: {
         duration: 0.5,
-        ease: "backOut"
+        ease: "backOut",
+        delayChildren: 0.3,
+        staggerChildren: 0.1
       }
     }
   };
@@ -176,10 +193,18 @@ export const GameBoard: React.FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <BoardContainer>
-        {/* <TestControls 
-          gameState={gameState}
-          setGameState={updateGameState}
-        /> */}
+        {showTestControls && (
+          <TestControls 
+            gameState={gameState}
+            setGameState={updateGameState}
+          />
+        )}
+        
+        <TestToggle 
+          onToggle={() => setShowTestControls(!showTestControls)}
+          isVisible={showTestControls}
+        />
+        
         
         <motion.div
           variants={boardVariants}
@@ -188,21 +213,23 @@ export const GameBoard: React.FC = () => {
         >
           <GameControls
             gameState={gameState}
+            gameTime={gameTime}
+            currentDifficulty={currentDifficulty}
             onNewGame={handleNewGame}
             onUndo={handleUndo}
-            onRedo={handleRedo}
             onHint={handleHint}
-            onAutoComplete={handleAutoComplete}
-            onSafeAutoMove={handleSafeAutoMove}
-            canUndo={canUndo(gameHistory)}
-            canRedo={canRedo(gameHistory)}
+            onAutoMove={handleAutoMove}
+            canUndo={canUndo()}
+            safeMode={safeMode}
+            onSafeModeToggle={handleSafeModeToggle}
+            isAutoMoving={isAutoMoving}
           />
           
           <GameArea>
             <LayoutGroup>
               <TopSection>
                 <div className="free-cells">
-                  {gameState.freeCells.map((card, index) => (
+                  {gameState.freeCells.map((card: Card | null, index: number) => (
                     <FreeCell
                       key={`freecell-${index}`}
                       card={card}
@@ -213,8 +240,12 @@ export const GameBoard: React.FC = () => {
                   ))}
                 </div>
                 
+                <div className="king-face-container">
+                  <KingFaceComponent />
+                </div>
+                
                 <div className="foundations">
-                  {gameState.foundations.map((foundation, index) => (
+                  {gameState.foundations.map((foundation: CardStack, index: number) => (
                     <Foundation
                       key={`foundation-${index}`}
                       cards={foundation}
@@ -227,7 +258,7 @@ export const GameBoard: React.FC = () => {
               </TopSection>
               
               <BottomSection>
-                {gameState.tableau.map((column, index) => (
+                {gameState.tableau.map((column: CardStack, index: number) => (
                   <Tableau
                     key={`tableau-${index}`}
                     cards={column}
@@ -257,39 +288,222 @@ export const GameBoard: React.FC = () => {
               exit="hidden"
             >
               <Fireworks>
-                {[...Array(20)].map((_, i) => (
+                {/* 프리미엄 카드들 - 최고 품질 애니메이션 (8개) */}
+                {[...Array(8)].map((_, i) => (
                   <motion.div
-                    key={i}
-                    className="firework"
-                    initial={{ scale: 0, opacity: 1 }}
+                    key={`premium-${i}`}
+                    className="firework premium-card"
+                    style={{
+                      left: `${15 + (i * 10) + Math.random() * 15}%`,
+                      top: `${-15 + Math.random() * 25}%`,
+                      width: `${28 + Math.random() * 12}px`,
+                      height: `${36 + Math.random() * 16}px`,
+                    }}
+                    initial={{ 
+                      scale: 0.1, 
+                      opacity: 0,
+                      rotateX: 0,
+                      rotateY: 0 
+                    }}
                     animate={{
-                      scale: [0, 1, 1.5],
-                      opacity: [1, 1, 0],
-                      x: Math.random() * 400 - 200,
-                      y: Math.random() * 400 - 200
+                      scale: [0.2, 1.4, 1.2, 1.0, 0.8, 0.6, 0.4],
+                      opacity: [0, 1, 1, 0.95, 0.85, 0.6, 0],
+                      rotate: [0, 60, 120, 180, 240, 300, 360 + Math.random() * 180],
+                      y: [
+                        -window.innerHeight * 0.15,
+                        window.innerHeight * 0.1,
+                        window.innerHeight * 0.35,
+                        window.innerHeight * 0.6,
+                        window.innerHeight * 0.8,
+                        window.innerHeight * 1.05,
+                        window.innerHeight * 1.3
+                      ],
+                      x: [
+                        (10 + i * 8) + Math.random() * 10,
+                        (12 + i * 8) + Math.random() * 15,
+                        (15 + i * 8) + Math.random() * 20,
+                        (13 + i * 8) + Math.random() * 15,
+                        (10 + i * 8) + Math.random() * 10,
+                        (8 + i * 8) + Math.random() * 8,
+                        (6 + i * 8) + Math.random() * 6
+                      ]
                     }}
                     transition={{
-                      duration: 1.5,
-                      delay: i * 0.1,
+                      duration: 5 + Math.random() * 2,
+                      delay: i * 0.3,
                       repeat: Infinity,
-                      repeatDelay: 2
+                      repeatDelay: 4 + Math.random() * 2,
+                      ease: "easeOut",
+                      times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1] // 부드러운 시간 분할
+                    }}
+                  />
+                ))}
+                
+                {/* 스탠다드 카드들 - 중간 품질 (12개) */}
+                {[...Array(12)].map((_, i) => (
+                  <motion.div
+                    key={`standard-${i}`}
+                    className="firework standard-card"
+                    style={{
+                      left: `${10 + (i * 6.5) + Math.random() * 20}%`,
+                      top: `${-10 + Math.random() * 20}%`,
+                      width: `${18 + Math.random() * 8}px`,
+                      height: `${24 + Math.random() * 10}px`,
+                    }}
+                    initial={{ 
+                      scale: 0.2, 
+                      opacity: 0,
+                      rotate: 0
+                    }}
+                    animate={{
+                      scale: [0.3, 1.3, 1.1, 0.9, 0.7, 0.4],
+                      opacity: [0, 1, 0.9, 0.8, 0.5, 0],
+                      rotate: [0, 90, 180, 270, 360, 450 + Math.random() * 90],
+                      y: [
+                        -window.innerHeight * 0.1,
+                        window.innerHeight * 0.2,
+                        window.innerHeight * 0.45,
+                        window.innerHeight * 0.7,
+                        window.innerHeight * 0.95,
+                        window.innerHeight * 1.25
+                      ],
+                      x: [
+                        (10 + i * 7) + Math.random() * 15,
+                        (15 + i * 7) + Math.random() * 20,
+                        (12 + i * 7) + Math.random() * 15,
+                        (8 + i * 7) + Math.random() * 10,
+                        (5 + i * 7) + Math.random() * 8,
+                        (3 + i * 7) + Math.random() * 5
+                      ]
+                    }}
+                    transition={{
+                      duration: 4.5 + Math.random() * 1.5,
+                      delay: Math.random() * 3 + (i * 0.2),
+                      repeat: Infinity,
+                      repeatDelay: 3 + Math.random() * 1.5,
+                      ease: "easeOut",
+                      times: [0, 0.2, 0.4, 0.6, 0.8, 1]
+                    }}
+                  />
+                ))}
+                
+                {/* 라이트 카드들 - 간단한 애니메이션 (20개) */}
+                {[...Array(20)].map((_, i) => (
+                  <motion.div
+                    key={`light-${i}`}
+                    className="firework light-card"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 30}%`,
+                      width: `${12 + Math.random() * 4}px`,
+                      height: `${16 + Math.random() * 6}px`,
+                    }}
+                    initial={{ 
+                      scale: 0.3, 
+                      opacity: 0 
+                    }}
+                    animate={{
+                      scale: [0.4, 1.1, 0.8, 0.5, 0.2],
+                      opacity: [0, 0.9, 0.7, 0.4, 0],
+                      rotate: [0, 120, 240, 360 + Math.random() * 180],
+                      y: [
+                        -window.innerHeight * 0.05,
+                        window.innerHeight * 0.3,
+                        window.innerHeight * 0.65,
+                        window.innerHeight * 1.0,
+                        window.innerHeight * 1.35
+                      ],
+                      x: [
+                        Math.random() * 100,
+                        Math.random() * 80 + 10,
+                        Math.random() * 60 + 20,
+                        Math.random() * 40 + 30,
+                        Math.random() * 20 + 40
+                      ]
+                    }}
+                    transition={{
+                      duration: 4 + Math.random() * 1,
+                      delay: Math.random() * 5,
+                      repeat: Infinity,
+                      repeatDelay: 2 + Math.random() * 1,
+                      ease: "easeOut",
+                      times: [0, 0.25, 0.5, 0.75, 1]
                     }}
                   />
                 ))}
               </Fireworks>
               
               <WinMessage>
-                <h1>🎉 Congratulations! 🎉</h1>
-                <p>You won in {gameState.moves} moves!</p>
-                <p>Time: {Math.floor(gameState.time / 60)}:{(gameState.time % 60).toString().padStart(2, '0')}</p>
-                <p>Score: {gameState.score}</p>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleNewGame}
+                <motion.div
+                  className="celebration-title"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.5,
+                    ease: "easeOut",
+                    delay: 0.1 
+                  }}
                 >
-                  New Game
-                </motion.button>
+                  Victory!
+                </motion.div>
+                
+                <motion.div
+                  className="celebration-subtitle"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
+                >
+                  Game completed successfully
+                </motion.div>
+                
+                <motion.div
+                  className="stats-container"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.4, ease: "easeOut" }}
+                >
+                  <div className="stat-item">
+                    <div className="stat-label">Moves</div>
+                    <div className="stat-value">{gameState.moves}</div>
+                  </div>
+                  
+                  <div className="stat-item">
+                    <div className="stat-label">Time</div>
+                    <div className="stat-value">
+                      {Math.floor(gameTime / 60)}m {(gameTime % 60)}s
+                    </div>
+                  </div>
+                  
+                  <div className="stat-item">
+                    <div className="stat-label">Score</div>
+                    <div className="stat-value">{gameState.score}</div>
+                  </div>
+                </motion.div>
+                
+                <motion.div
+                  className="action-buttons"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, duration: 0.4, ease: "easeOut" }}
+                >
+                  <button
+                    className="celebration-button"
+                    onClick={() => handleNewGame()}
+                  >
+                    New Game
+                  </button>
+                  
+                  <button
+                    className="celebration-button"
+                    onClick={() => setShowWinAnimation(false)}
+                    style={{
+                      background: "#64748b",
+                      boxShadow: "0 4px 12px rgba(100, 116, 139, 0.3)"
+                    }}
+                  >
+                    Continue
+                  </button>
+                </motion.div>
               </WinMessage>
             </WinOverlay>
           )}
@@ -300,6 +514,13 @@ export const GameBoard: React.FC = () => {
           maxCards={warningMessage.maxCards}
           attemptedCards={warningMessage.attemptedCards}
           onClose={() => setWarningMessage({ show: false, maxCards: 0, attemptedCards: 0 })}
+        />
+        
+        <UndoMessage
+          show={undoMessage.show}
+          type={undoMessage.type}
+          message={undoMessage.message}
+          onClose={() => setUndoMessage({ show: false, type: 'success', message: '' })}
         />
       </BoardContainer>
     </DndProvider>

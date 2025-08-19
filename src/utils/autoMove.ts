@@ -1,5 +1,5 @@
 import { Card, GameState, PileType, PileLocation } from '../types/game.types';
-import { canMoveCard } from './gameLogic';
+import { canMoveCard, checkWinCondition } from './gameLogic';
 import { isSafeToAutoMove } from './safeAutoMove';
 
 // 카드의 자동 이동 위치 찾기
@@ -9,7 +9,7 @@ export const findAutoMoveDestination = (
   gameState: GameState,
   checkSafeMove: boolean = true
 ): PileLocation | null => {
-  // 1. 먼저 파운데이션으로 이동 가능한지 확인 (우선순위 높음)
+  // 1. 첫 번째 우선순위: 파운데이션 (홈셀)
   // 안전 이동 체크가 활성화된 경우 안전한 이동만 허용
   for (let i = 0; i < gameState.foundations.length; i++) {
     if (canMoveCard(card, gameState.foundations[i], PileType.FOUNDATION)) {
@@ -19,38 +19,34 @@ export const findAutoMoveDestination = (
     }
   }
   
-  // 2. 프리셀에서의 이동인 경우, 테이블로로 이동 가능한지 확인
-  if (fromLocation.type === PileType.FREECELL) {
-    for (let i = 0; i < gameState.tableau.length; i++) {
+  // 2. 두 번째 우선순위: 카드가 있는 테이블로 컬럼
+  for (let i = 0; i < gameState.tableau.length; i++) {
+    if (i !== fromLocation.index && gameState.tableau[i].length > 0) {
       if (canMoveCard(card, gameState.tableau[i], PileType.TABLEAU)) {
         return { type: PileType.TABLEAU, index: i };
       }
     }
   }
   
-  // 3. 테이블로에서의 이동인 경우
-  if (fromLocation.type === PileType.TABLEAU) {
-    // 다른 테이블로 컬럼으로 이동 가능한지 확인
-    for (let i = 0; i < gameState.tableau.length; i++) {
-      if (i !== fromLocation.index && canMoveCard(card, gameState.tableau[i], PileType.TABLEAU)) {
-        // 빈 컬럼으로의 이동은 킹만 가능
-        if (gameState.tableau[i].length === 0 && card.rank === 13) {
-          return { type: PileType.TABLEAU, index: i };
-        }
-        // 빈 컬럼이 아닌 경우
-        else if (gameState.tableau[i].length > 0) {
-          return { type: PileType.TABLEAU, index: i };
-        }
-      }
+  // 3. 세 번째 우선순위: 빈 테이블로 컬럼 (빈줄)
+  // 모든 카드가 빈 컬럼으로 이동 가능
+  for (let i = 0; i < gameState.tableau.length; i++) {
+    if (i !== fromLocation.index && gameState.tableau[i].length === 0) {
+      return { type: PileType.TABLEAU, index: i };
     }
-    
-    // 4. 프리셀로 이동 가능한지 확인 (마지막 옵션)
+  }
+  
+  // 4. 마지막 우선순위: 프리셀
+  // 테이블로에서의 이동인 경우에만 프리셀 사용
+  if (fromLocation.type === PileType.TABLEAU) {
     for (let i = 0; i < gameState.freeCells.length; i++) {
       if (gameState.freeCells[i] === null) {
         return { type: PileType.FREECELL, index: i };
       }
     }
   }
+  
+  // 프리셀에서의 이동인 경우, 이미 위에서 테이블로 체크를 했으므로 추가 처리 불필요
   
   return null;
 };
@@ -80,6 +76,9 @@ export const executeAutoMove = (
         if (movedCards.length === 1) {
           newState.foundations[toLocation.index].push(movedCards[0]);
           newState.score += 10;
+          
+          // 파운데이션에 카드 추가 후 승리 조건 확인
+          newState.isGameWon = checkWinCondition(newState.foundations);
         }
       } else if (toLocation.type === PileType.TABLEAU) {
         newState.tableau[toLocation.index].push(...movedCards);
@@ -96,6 +95,9 @@ export const executeAutoMove = (
       if (toLocation.type === PileType.FOUNDATION) {
         newState.foundations[toLocation.index].push(movedCard);
         newState.score += 10;
+        
+        // 파운데이션에 카드 추가 후 승리 조건 확인
+        newState.isGameWon = checkWinCondition(newState.foundations);
       } else if (toLocation.type === PileType.TABLEAU) {
         newState.tableau[toLocation.index].push(movedCard);
         newState.score += 5;

@@ -4,7 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
 import { Card } from '../Card/Card';
 import { CardStack, GameState, PileType, Suit } from '../../types/game.types';
-import { canMoveCard } from '../../utils/gameLogic';
+import { canMoveCard, checkWinCondition } from '../../utils/gameLogic';
+import { isSafeModeEnabled } from '../../utils/allToHomeHelper';
+import { findAllMovesToFoundations } from '../../utils/moveAllToFoundations';
+import { executeAutoMove } from '../../utils/autoMove';
 
 const FoundationSlot = styled.div<{ isOver: boolean; canDrop: boolean; suit?: Suit }>`
   width: 90px;
@@ -99,7 +102,14 @@ export const Foundation: React.FC<FoundationProps> = ({
     const { card, stackIndex, from } = item;
     
     setGameState(prev => {
-      const newState = { ...prev };
+      let newState = { 
+        ...prev,
+        tableau: prev.tableau.map(column => [...column]),
+        foundations: prev.foundations.map(foundation => [...foundation]),
+        freeCells: [...prev.freeCells],
+        moveHistory: [...prev.moveHistory],
+        selectedCards: [...prev.selectedCards]
+      };
       
       // 원래 위치에서 카드 제거
       if (from === 'tableau') {
@@ -113,6 +123,9 @@ export const Foundation: React.FC<FoundationProps> = ({
       // 파운데이션에 카드 추가
       newState.foundations[index] = [...newState.foundations[index], card];
       
+      // 파운데이션에 카드 추가 후 승리 조건 확인
+      newState.isGameWon = checkWinCondition(newState.foundations);
+      
       // 점수 및 이동 횟수 업데이트
       newState.score += 10;
       newState.moves += 1;
@@ -124,6 +137,17 @@ export const Foundation: React.FC<FoundationProps> = ({
         cards: [card],
         timestamp: Date.now()
       });
+      
+      // Check for all-to-home moves if safe mode is OFF
+      if (!isSafeModeEnabled()) {
+        const allMoves = findAllMovesToFoundations(newState);
+        if (allMoves.length > 0) {
+          // Apply all additional moves
+          allMoves.forEach((move) => {
+            newState = executeAutoMove(move.card, move.from, move.to, newState);
+          });
+        }
+      }
       
       return newState;
     });

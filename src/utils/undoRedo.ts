@@ -8,7 +8,7 @@ export interface GameHistory {
 
 // 초기 히스토리 생성
 export const createHistory = (initialState: GameState): GameHistory => ({
-  states: [initialState],
+  states: [cloneGameState(initialState)],
   currentIndex: 0
 });
 

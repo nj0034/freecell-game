@@ -1,5 +1,6 @@
 import { Card, Suit, Rank, CardStack, PileLocation, PileType, GameState } from '../types/game.types';
 import { v4 as uuidv4 } from 'uuid';
+import { DifficultyLevel, generateGameForDifficulty, difficultyConfigs } from './difficulty';
 
 // 덱 생성
 export const createDeck = (): Card[] => {
@@ -34,9 +35,9 @@ export const shuffleDeck = (deck: Card[]): Card[] => {
   return shuffled;
 };
 
-// 게임 초기화
-export const initializeGame = (): GameState => {
-  const deck = shuffleDeck(createDeck());
+// 게임 초기화 (난이도 지원)
+export const initializeGame = (difficulty: DifficultyLevel = DifficultyLevel.MEDIUM): GameState => {
+  const deck = generateGameForDifficulty(difficulty);
   const tableau: CardStack[] = [];
   
   // 프리셀 게임 배치: 첫 4열에 7장, 나머지 4열에 6장
@@ -52,18 +53,25 @@ export const initializeGame = (): GameState => {
     }
   }
   
+  // Expert 난이도에서는 프리셀 하나를 비활성화
+  const config = difficultyConfigs[difficulty];
+  const freeCells: (Card | null)[] = [];
+  for (let i = 0; i < config.startingFreeCells; i++) {
+    freeCells.push(null);
+  }
+  
   return {
     tableau,
     foundations: [[], [], [], []],
-    freeCells: [null, null, null, null],
+    freeCells,
     moveHistory: [],
     selectedCards: [],
     score: 0,
     moves: 0,
-    time: 0,
     isGameWon: false,
     isAutoCompleteActive: false,
-    testMode: false
+    testMode: false,
+    difficulty
   };
 };
 

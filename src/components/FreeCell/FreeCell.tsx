@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { Card } from '../Card/Card';
 import { Card as CardType, GameState, PileType } from '../../types/game.types';
 import { findAutoMoveDestination, executeAutoMove, tryMoveToFoundation } from '../../utils/autoMove';
+import { isSafeModeEnabled } from '../../utils/allToHomeHelper';
+import { findAllMovesToFoundations } from '../../utils/moveAllToFoundations';
 
 const FreeCellSlot = styled.div<{ isOver: boolean; canDrop: boolean; isEmpty: boolean }>`
   width: 90px;
@@ -76,7 +78,14 @@ export const FreeCell: React.FC<FreeCellProps> = ({
     const { card: droppedCard, stackIndex, from } = item;
     
     setGameState(prev => {
-      const newState = { ...prev };
+      const newState = { 
+        ...prev,
+        tableau: prev.tableau.map(column => [...column]),
+        foundations: prev.foundations.map(foundation => [...foundation]),
+        freeCells: [...prev.freeCells],
+        moveHistory: [...prev.moveHistory],
+        selectedCards: [...prev.selectedCards]
+      };
       
       // 원래 위치에서 카드 제거
       if (from === 'tableau') {
@@ -111,29 +120,51 @@ export const FreeCell: React.FC<FreeCellProps> = ({
     // 더블클릭인 경우 파운데이션으로만 이동
     if (clickedCard.doubleClick) {
       const fromLocation = { type: PileType.FREECELL, index };
-      const newState = tryMoveToFoundation(clickedCard, fromLocation, gameState);
-      if (newState) {
-        setGameState(newState);
-        console.log('Double-clicked freecell card moved to foundation');
-      } else {
-        // 이동할 수 없는 경우 shake 애니메이션
-        setShouldShake(true);
-      }
+      setGameState(prevState => {
+        let newState = tryMoveToFoundation(clickedCard, fromLocation, prevState);
+        if (newState) {
+          // If safe mode is OFF, check for additional moves
+          if (!isSafeModeEnabled()) {
+            const additionalMoves = findAllMovesToFoundations(newState);
+            additionalMoves.forEach(move => {
+              newState = executeAutoMove(move.card, move.from, move.to, newState!);
+            });
+          }
+          console.log('Double-clicked freecell card moved to foundation');
+          return newState;
+        } else {
+          // 이동할 수 없는 경우 shake 애니메이션
+          setShouldShake(true);
+          return prevState;
+        }
+      });
       return;
     }
     
-    // 일반 클릭: 자동으로 가능한 위치로 이동
+    // 일반 클릭: 자동으로 가능한 위치로 이동 (safe move 체크 비활성화로 Foundation 우선순위 보장)
     const fromLocation = { type: PileType.FREECELL, index };
-    const destination = findAutoMoveDestination(clickedCard, fromLocation, gameState);
-    
-    if (destination) {
-      const newState = executeAutoMove(clickedCard, fromLocation, destination, gameState);
-      setGameState(newState);
-      console.log('Auto-moved freecell card to:', destination);
-    } else {
-      // 이동할 수 없는 경우 shake 애니메이션
-      setShouldShake(true);
-    }
+    setGameState(prevState => {
+      const destination = findAutoMoveDestination(clickedCard, fromLocation, prevState, false);
+      
+      if (destination) {
+        let newState = executeAutoMove(clickedCard, fromLocation, destination, prevState);
+        
+        // If card was moved to foundation and safe mode is OFF, execute all to home
+        if (destination.type === PileType.FOUNDATION && !isSafeModeEnabled()) {
+          const additionalMoves = findAllMovesToFoundations(newState);
+          additionalMoves.forEach(move => {
+            newState = executeAutoMove(move.card, move.from, move.to, newState);
+          });
+        }
+        
+        console.log('Auto-moved freecell card to:', destination);
+        return newState;
+      } else {
+        // 이동할 수 없는 경우 shake 애니메이션
+        setShouldShake(true);
+        return prevState;
+      }
+    });
   };
 
   const cardVariants = {

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useDrag } from 'react-dnd';
 import { Card as CardType, Suit } from '../../types/game.types';
 import { CardContainer, CardFace, CardBack, SuitSymbol, RankText } from './Card.styles';
+import { CardHighlight, getHighlightStyles, getHighlightTooltip } from '../../utils/cardHighlight';
 
 interface CardProps {
   card: CardType;
@@ -14,6 +15,8 @@ interface CardProps {
   source: 'tableau' | 'freecell' | 'foundation';
   shouldShake?: boolean;
   onShakeComplete?: () => void;
+  allCards?: CardType[];  // All cards in the column (for multi-card drag)
+  highlight?: CardHighlight;  // Highlight information for card movability
 }
 
 const suitSymbols: Record<Suit, string> = {
@@ -39,19 +42,23 @@ export const Card: React.FC<CardProps> = ({
   isStacked = false,
   source,
   shouldShake = false,
-  onShakeComplete
+  onShakeComplete,
+  allCards = [],
+  highlight
 }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'CARD',
     item: () => {
-      console.log('Dragging card:', card, 'from:', source, 'stackIndex:', stackIndex);
-      return { card, index, stackIndex, from: source };
+      // Calculate how many cards are being dragged (from this card to the end)
+      const draggedCards = allCards.length > 0 ? allCards.slice(index) : [card];
+      console.log('Dragging card:', card, 'from:', source, 'stackIndex:', stackIndex, 'draggedCards:', draggedCards.length);
+      return { card, index, stackIndex, from: source, draggedCards };
     },
     canDrag: canDrag && card.faceUp,
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
     })
-  }), [card, index, stackIndex, source, canDrag]);
+  }), [card, index, stackIndex, source, canDrag, allCards]);
 
   const handleClick = () => {
     if (onCardClick && card.faceUp) {
@@ -59,12 +66,6 @@ export const Card: React.FC<CardProps> = ({
     }
   };
 
-  const handleDoubleClick = () => {
-    if (onCardClick && card.faceUp) {
-      // 더블클릭 시 특별 처리를 위해 card에 플래그 추가
-      onCardClick({ ...card, doubleClick: true } as any);
-    }
-  };
 
   const cardVariants = {
     initial: {
@@ -144,7 +145,6 @@ export const Card: React.FC<CardProps> = ({
           "initial"
         }
         onClick={handleClick}
-        onDoubleClick={handleDoubleClick}
         onAnimationComplete={() => {
           if (shouldShake && onShakeComplete) {
             onShakeComplete();
@@ -152,7 +152,9 @@ export const Card: React.FC<CardProps> = ({
         }}
         style={{
           opacity: isDragging ? 0.5 : 1,
+          ...( highlight && source === 'tableau' ? getHighlightStyles(highlight) : {} )
         }}
+        title={highlight && source === 'tableau' ? getHighlightTooltip(highlight) : undefined}
       >
         <CardContainer isSelected={false}>
           {card.faceUp ? (

@@ -2,7 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { GameState } from '../../types/game.types';
-import { canAutoComplete } from '../../utils/gameLogic';
+import { DifficultyLevel } from '../../utils/difficulty';
+import { DifficultySelector } from '../DifficultySelector/DifficultySelector';
+import { HamburgerMenu } from '../HamburgerMenu/HamburgerMenu';
 
 const ControlsContainer = styled.div`
   max-width: 1200px;
@@ -15,11 +17,15 @@ const ControlsContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   transition: background 0.3s ease;
+  position: relative;
+  z-index: 100;
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
+  position: relative;
+  z-index: 1000;
 `;
 
 const ControlButton = styled(motion.button)`
@@ -74,26 +80,30 @@ const InfoItem = styled.div`
 
 interface GameControlsProps {
   gameState: GameState;
-  onNewGame: () => void;
+  gameTime: number;
+  currentDifficulty: DifficultyLevel;
+  onNewGame: (difficulty?: DifficultyLevel) => void;
   onUndo: () => void;
-  onRedo?: () => void;
   onHint: () => void;
-  onAutoComplete: () => void;
-  onSafeAutoMove?: () => void;
+  onAutoMove: () => void;
   canUndo?: boolean;
-  canRedo?: boolean;
+  safeMode: boolean;
+  onSafeModeToggle: () => void;
+  isAutoMoving?: boolean;
 }
 
 export const GameControls: React.FC<GameControlsProps> = ({
   gameState,
+  gameTime,
+  currentDifficulty,
   onNewGame,
   onUndo,
-  onRedo,
   onHint,
-  onAutoComplete,
-  onSafeAutoMove,
+  onAutoMove,
   canUndo: canUndoProp = true,
-  canRedo: canRedoProp = false
+  safeMode,
+  onSafeModeToggle,
+  isAutoMoving = false
 }) => {
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -106,70 +116,40 @@ export const GameControls: React.FC<GameControlsProps> = ({
     tap: { scale: 0.95 }
   };
 
-  const canComplete = canAutoComplete(gameState);
-
   return (
     <ControlsContainer>
       <ButtonGroup>
-        <ControlButton
-          variants={buttonVariants}
-          whileHover="hover"
-          whileTap="tap"
-          onClick={onNewGame}
-        >
-          🎮 New Game
-        </ControlButton>
+        <HamburgerMenu
+          onNewGame={() => onNewGame()}
+          onHint={onHint}
+          safeMode={safeMode}
+          onSafeModeToggle={onSafeModeToggle}
+        />
+        
+        <DifficultySelector
+          currentDifficulty={currentDifficulty}
+          onDifficultyChange={(difficulty) => onNewGame(difficulty)}
+          disabled={(gameState.moves > 0 && !gameState.isGameWon) || isAutoMoving}
+        />
         
         <ControlButton
           variants={buttonVariants}
           whileHover="hover"
           whileTap="tap"
           onClick={onUndo}
-          disabled={!canUndoProp}
+          disabled={!canUndoProp || isAutoMoving}
         >
           ↩️ Undo
         </ControlButton>
         
-        {onRedo && (
-          <ControlButton
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={onRedo}
-            disabled={!canRedoProp}
-          >
-            ↪️ Redo
-          </ControlButton>
-        )}
-        
         <ControlButton
           variants={buttonVariants}
           whileHover="hover"
           whileTap="tap"
-          onClick={onHint}
+          onClick={onAutoMove}
+          disabled={isAutoMoving}
         >
-          💡 Hint
-        </ControlButton>
-        
-        {onSafeAutoMove && (
-          <ControlButton
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={onSafeAutoMove}
-          >
-            🎯 Safe Move
-          </ControlButton>
-        )}
-        
-        <ControlButton
-          variants={buttonVariants}
-          whileHover="hover"
-          whileTap="tap"
-          onClick={onAutoComplete}
-          disabled={!canComplete}
-        >
-          ⚡ Auto Complete
+          {safeMode ? '🎯 Safe Move' : '⚡ All to Home'}
         </ControlButton>
       </ButtonGroup>
       
@@ -202,7 +182,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
         
         <InfoItem>
           <span className="label">Time</span>
-          <span className="value">{formatTime(gameState.time)}</span>
+          <span className="value">{formatTime(gameTime)}</span>
         </InfoItem>
       </InfoGroup>
     </ControlsContainer>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Move Undo Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #2d3436;
+            color: white;
+        }
+        .test-case {
+            background: #34495e;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .pass {
+            color: #2ecc71;
+        }
+        .fail {
+            color: #e74c3c;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .log {
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 First Move Undo Test</h1>
+    
+    <div class="test-case">
+        <h2>Test: First Move Undo</h2>
+        <p>This test verifies that the undo button works correctly for the very first move in a game.</p>
+        
+        <h3>Test Steps:</h3>
+        <ol>
+            <li>Start a new game</li>
+            <li>Record the initial state (moves, score)</li>
+            <li>Make ONE move (any valid move)</li>
+            <li>Verify state changed (moves increased)</li>
+            <li>Click Undo</li>
+            <li>Verify state returned to initial (moves = 0)</li>
+        </ol>
+        
+        <h3>Manual Test Instructions:</h3>
+        <ol>
+            <li>Open the game at <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></li>
+            <li>Start a new game (if needed)</li>
+            <li>Note the move counter shows "0"</li>
+            <li>Make ONE move - click any card to move it</li>
+            <li>Verify the move counter shows "1"</li>
+            <li>Click the Undo button</li>
+            <li>✅ PASS if move counter returns to "0"</li>
+            <li>❌ FAIL if undo doesn't work or move counter stays at "1"</li>
+        </ol>
+        
+        <div class="log">
+            <h3>Test Log:</h3>
+            <div id="log">
+                Test ready. Please follow the manual test instructions above.
+            </div>
+        </div>
+        
+        <h3>Expected Result:</h3>
+        <p class="pass">✅ After clicking undo on the first move, the game should return to its initial state with 0 moves.</p>
+        
+        <h3>Console Test Script:</h3>
+        <p>You can also paste this into the browser console to help debug:</p>
+        <pre style="background: #000; padding: 10px; border-radius: 5px;">
+// Debug helper for first move undo
+console.log('=== FIRST MOVE UNDO DEBUG ===');
+console.log('1. Current moves:', document.querySelector('[class*="Timer"]')?.textContent);
+console.log('2. Make a move, then check moves again');
+console.log('3. Click undo and verify moves returns to 0');
+
+// Monitor state changes
+let observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.target.textContent.includes('이동')) {
+            console.log('Move count changed:', mutation.target.textContent);
+        }
+    });
+});
+
+// Start observing
+const timerElement = document.querySelector('[class*="Timer"]');
+if (timerElement) {
+    observer.observe(timerElement, { childList: true, subtree: true });
+    console.log('Monitoring move counter...');
+}
+        </pre>
+    </div>
+</body>
+</html>

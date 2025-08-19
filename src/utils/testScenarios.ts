@@ -47,7 +47,6 @@ export const createFoundationTestState = (): GameState => {
     selectedCards: [],
     score: 0,
     moves: 0,
-    time: 0,
     isGameWon: false,
     isAutoCompleteActive: false,
     testMode: true
@@ -91,7 +90,6 @@ export const createTableauTestState = (): GameState => {
     selectedCards: [],
     score: 0,
     moves: 0,
-    time: 0,
     isGameWon: false,
     isAutoCompleteActive: false,
     testMode: true
@@ -128,7 +126,6 @@ export const createFreeCellTestState = (): GameState => {
     selectedCards: [],
     score: 0,
     moves: 0,
-    time: 0,
     isGameWon: false,
     isAutoCompleteActive: false,
     testMode: true
@@ -175,7 +172,6 @@ export const createAlmostWonTestState = (): GameState => {
     selectedCards: [],
     score: 440, // 11 * 10 * 4
     moves: 44,
-    time: 180,
     isGameWon: false,
     isAutoCompleteActive: false,
     testMode: true
@@ -236,7 +232,6 @@ export const createComplexTestState = (): GameState => {
     selectedCards: [],
     score: 0,
     moves: 0,
-    time: 0,
     isGameWon: false,
     isAutoCompleteActive: false,
     testMode: true
@@ -311,7 +306,6 @@ export const createSafeAutoMoveTestState = (): GameState => {
     selectedCards: [],
     score: 60, // 기존 파운데이션 점수
     moves: 6,
-    time: 30,
     isGameWon: false,
     isAutoCompleteActive: false,
     testMode: true
@@ -372,7 +366,6 @@ export const createMultiCardMoveTestState = (): GameState => {
     selectedCards: [],
     score: 0,
     moves: 0,
-    time: 0,
     isGameWon: false,
     isAutoCompleteActive: false,
     testMode: true

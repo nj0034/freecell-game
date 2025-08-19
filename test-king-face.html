@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>킹 얼굴 테스트</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 50px;
+            background: #0f4c3a;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .king-face {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(to bottom,
+                /* Crown */
+                #FFD700 0%, #FFD700 20%,
+                /* Face */
+                #FFDBAC 20%, #FFDBAC 80%,
+                /* Collar */
+                #8B4513 80%, #8B4513 100%
+            );
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            border: 2px solid #000000;
+            border-radius: 4px;
+            margin: 20px;
+        }
+        
+        .crown-spikes {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 16px;
+            background: 
+                linear-gradient(45deg, transparent 30%, #FFD700 30%, #FFD700 70%, transparent 70%),
+                linear-gradient(45deg, transparent 30%, #FFD700 30%, #FFD700 70%, transparent 70%);
+            background-size: 12px 16px;
+            background-position: 0 0, 24px 0;
+            image-rendering: pixelated;
+        }
+        
+        .crown-gem {
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #FF0000;
+            border-radius: 50%;
+            border: 1px solid #000000;
+            image-rendering: pixelated;
+        }
+        
+        .eye {
+            position: absolute;
+            top: 30px;
+            width: 8px;
+            height: 8px;
+            background: #000000;
+            border-radius: 50%;
+            image-rendering: pixelated;
+        }
+        
+        .eye.left { left: 20px; }
+        .eye.right { right: 20px; }
+        
+        .pupil {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ffffff;
+            border-radius: 50%;
+            image-rendering: pixelated;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.1s ease;
+        }
+        
+        .nose {
+            position: absolute;
+            top: 42px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 6px;
+            background: #DEB887;
+            border-radius: 2px;
+            image-rendering: pixelated;
+        }
+        
+        .mustache {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 6px;
+            background: #8B4513;
+            border-radius: 3px;
+            image-rendering: pixelated;
+        }
+        
+        .mustache::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: -4px;
+            width: 8px;
+            height: 2px;
+            background: #8B4513;
+            border-radius: 1px;
+        }
+        
+        .mustache::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: -4px;
+            width: 8px;
+            height: 2px;
+            background: #8B4513;
+            border-radius: 1px;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .instruction {
+            color: white;
+            text-align: center;
+            margin: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>픽셀 아트 킹 얼굴 테스트</h1>
+    <div class="instruction">마우스를 움직여보세요! 킹의 눈이 따라갑니다.</div>
+    
+    <div class="test-container">
+        <div class="king-face" id="kingFace">
+            <div class="crown-spikes"></div>
+            <div class="crown-gem"></div>
+            
+            <div class="eye left">
+                <div class="pupil" id="leftPupil"></div>
+            </div>
+            
+            <div class="eye right">
+                <div class="pupil" id="rightPupil"></div>
+            </div>
+            
+            <div class="nose"></div>
+            <div class="mustache"></div>
+        </div>
+    </div>
+
+    <script>
+        const kingFace = document.getElementById('kingFace');
+        const leftPupil = document.getElementById('leftPupil');
+        const rightPupil = document.getElementById('rightPupil');
+
+        document.addEventListener('mousemove', (e) => {
+            const rect = kingFace.getBoundingClientRect();
+            const kingCenterX = rect.left + rect.width / 2;
+            const kingCenterY = rect.top + rect.height / 2;
+            
+            // 마우스와 킹 얼굴 중심 사이의 벡터 계산
+            const deltaX = e.clientX - kingCenterX;
+            const deltaY = e.clientY - kingCenterY;
+            
+            // 눈동자가 움직일 수 있는 최대 거리
+            const maxDistance = 2;
+            
+            // 거리 정규화
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const normalizedX = distance > 0 ? (deltaX / distance) * Math.min(distance / 100, 1) * maxDistance : 0;
+            const normalizedY = distance > 0 ? (deltaY / distance) * Math.min(distance / 100, 1) * maxDistance : 0;
+            
+            // 양쪽 눈동자에 적용
+            leftPupil.style.transform = `translate(${normalizedX}px, ${normalizedY}px)`;
+            rightPupil.style.transform = `translate(${normalizedX}px, ${normalizedY}px)`;
+        });
+    </script>
+</body>
+</html>

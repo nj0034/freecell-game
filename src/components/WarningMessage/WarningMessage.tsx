@@ -7,11 +7,11 @@ const MessageContainer = styled(motion.div)`
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.95) 0%, rgba(238, 90, 36, 0.95) 100%);
-  color: white;
+  background: ${props => props.theme.accentColor || '#ff6b6b'};
+  color: ${props => props.theme.buttonText};
   padding: 15px 25px;
   border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 20px ${props => props.theme.shadowColor};
   backdrop-filter: blur(10px);
   z-index: 10000;
   max-width: 400px;
@@ -19,6 +19,7 @@ const MessageContainer = styled(motion.div)`
   display: flex;
   align-items: center;
   gap: 15px;
+  cursor: pointer;
 `;
 
 const MessageContent = styled.div`
@@ -36,7 +37,8 @@ const Message = styled.p`
 const MaxCards = styled.span`
   font-weight: bold;
   font-size: 1.2em;
-  color: #ffeb3b;
+  color: ${props => props.theme.primaryColor || '#ffeb3b'};
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 `;
 
 const Title = styled.div`

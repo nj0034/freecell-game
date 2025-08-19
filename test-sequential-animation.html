@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freecell - Sequential Card Animation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .feature-description {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        .feature-list li:before {
+            content: "✓ ";
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .code-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .code-title {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .start-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        .start-button:hover {
+            background: #45a049;
+        }
+        .note {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎴 Freecell Sequential Card Animation</h1>
+            <p>Enhanced card movement with smooth one-by-one animations</p>
+        </div>
+
+        <div class="feature-description">
+            <h2>🆕 New Feature: Sequential Card Animation</h2>
+            <p>The <code>handleCardClick</code> function now features enhanced animations that move multiple cards one by one instead of all at once, creating a more visually appealing and realistic card movement experience.</p>
+            
+            <ul class="feature-list">
+                <li><strong>Card-by-Card Movement:</strong> Multiple cards now move sequentially with smooth animations</li>
+                <li><strong>Customizable Timing:</strong> Configurable delay (150ms) and animation duration (250ms) between card movements</li>
+                <li><strong>Animation State Management:</strong> Prevents multiple animations from running simultaneously</li>
+                <li><strong>Smooth Transitions:</strong> Each card uses framer-motion's layout animations for smooth positioning</li>
+                <li><strong>Error Handling:</strong> Robust error handling for animation sequences</li>
+                <li><strong>Visual Feedback:</strong> Maintains existing shake animations for invalid moves</li>
+            </ul>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">Key Implementation Details:</div>
+            <div class="code-block">
+// New sequential card movement utility
+await moveCardsSequentially(
+  cards,
+  columnIndex,
+  destination.columnIndex,
+  cardIndex,
+  gameState,
+  setGameState,
+  { delay: 150, animationDuration: 250 }
+);
+
+// Animation state management
+const [isAnimating, setIsAnimating] = React.useState(false);
+
+// Prevents clicks during animation
+if (isAnimating) return;
+            </div>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">Animation Flow:</div>
+            <div class="code-block">
+1. User clicks on a card in a sequence
+2. System validates if multiple cards can be moved
+3. Animation lock is activated (isAnimating = true)
+4. Cards move one by one with 150ms delay between movements
+5. Each card takes 250ms to complete its animation
+6. Animation lock is released after completion
+7. Game state is updated with proper scoring and history
+            </div>
+        </div>
+
+        <div class="note">
+            <h3>🎯 How to Test:</h3>
+            <p>1. Start the game and set up some card sequences</p>
+            <p>2. Click on a card that has multiple cards below it in sequence</p>
+            <p>3. Watch as the cards move one by one to their destination</p>
+            <p>4. Notice the smooth, staggered animation instead of instant movement</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="start-button" onclick="window.location.href='http://localhost:3000'">
+                🎮 Play Game (Port 3000)
+            </button>
+            <button class="start-button" onclick="window.location.href='http://localhost:3001'">
+                🎮 Play Game (Port 3001)
+            </button>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">Technical Benefits:</div>
+            <ul class="feature-list">
+                <li><strong>Better UX:</strong> Users can see each card movement clearly</li>
+                <li><strong>Visual Clarity:</strong> Easier to understand complex multi-card moves</li>
+                <li><strong>Smooth Performance:</strong> Leverages framer-motion's optimized animations</li>
+                <li><strong>Consistent Behavior:</strong> Works with existing drag-and-drop and auto-move features</li>
+                <li><strong>Maintainable Code:</strong> Separated animation logic into reusable utility functions</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
