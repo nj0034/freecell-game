@@ -21,7 +21,7 @@ import { Tableau } from '../Tableau/Tableau';
 import { Foundation } from '../Foundation/Foundation';
 import { FreeCell } from '../FreeCell/FreeCell';
 import { GameControls } from '../GameControls/GameControls';
-import { TestControls } from '../TestControls/TestControls';
+// import { TestControls } from '../TestControls/TestControls';
 import { WarningMessage } from '../WarningMessage/WarningMessage';
 import {
   BoardContainer,
