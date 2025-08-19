@@ -1,4 +1,4 @@
-import { Card, GameState } from '../types/game.types';
+import { GameState } from '../types/game.types';
 import { canSelectCards, getMaxMovableCards } from './gameLogic';
 
 export interface CardHighlight {

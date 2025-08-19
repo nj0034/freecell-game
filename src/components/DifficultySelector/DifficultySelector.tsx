@@ -78,21 +78,6 @@ const DifficultyOption = styled(motion.button)<{ isActive: boolean }>`
   }
 `;
 
-const DifficultyIcon = styled.span<{ level: DifficultyLevel }>`
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: ${props => {
-    switch(props.level) {
-      case DifficultyLevel.EASY: return '#4CAF50';
-      case DifficultyLevel.MEDIUM: return '#FFC107';
-      case DifficultyLevel.HARD: return '#FF9800';
-      case DifficultyLevel.EXPERT: return '#F44336';
-      default: return '#999';
-    }
-  }};
-`;
 
 interface DifficultySelectorProps {
   currentDifficulty: DifficultyLevel;

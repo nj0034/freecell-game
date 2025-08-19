@@ -1,5 +1,4 @@
 // Simple state management without Zustand
-import { useState, useEffect, useCallback } from 'react';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { GameState } from '../types/game.types';

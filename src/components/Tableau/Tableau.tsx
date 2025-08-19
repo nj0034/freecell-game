@@ -11,7 +11,7 @@ import { findAutoMoveDestination, executeAutoMove } from '../../utils/autoMove';
 import { isSafeModeEnabled } from '../../utils/allToHomeHelper';
 import { findAllMovesToFoundations } from '../../utils/moveAllToFoundations';
 import { moveCardsSequentially, moveSingleCardWithAnimation, moveMultipleCardsToFoundationSequentially } from '../../utils/sequentialCardMove';
-import { calculateCardHighlights, shouldUpdateHighlights } from '../../utils/cardHighlight';
+import { calculateCardHighlights } from '../../utils/cardHighlight';
 
 const TableauColumn = styled.div<{ isOver: boolean; canDrop: boolean }>`
   min-height: 150px;
