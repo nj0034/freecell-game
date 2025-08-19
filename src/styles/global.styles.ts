@@ -14,6 +14,16 @@ export const GlobalStyles = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    background: ${(props: any) => props.theme.background};
+    ${(props: any) => props.theme.backgroundImage ? `
+      background-image: ${props.theme.backgroundImage};
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    ` : ''}
+    ${(props: any) => props.theme.backgroundGradient && !props.theme.backgroundImage ? `
+      background: ${props.theme.backgroundGradient};
+    ` : ''}
   }
   
   code {
@@ -32,16 +42,18 @@ export const GlobalStyles = createGlobalStyle`
   }
   
   ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: ${(props: any) => props.theme.boardBackground || 'rgba(255, 255, 255, 0.1)'};
     border-radius: 10px;
   }
   
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: ${(props: any) => props.theme.primaryColor || '#667eea'};
     border-radius: 10px;
+    opacity: 0.8;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    background: ${(props: any) => props.theme.secondaryColor || props.theme.primaryColor || '#764ba2'};
+    opacity: 1;
   }
 `;

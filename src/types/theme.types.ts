@@ -1,63 +1,101 @@
+export enum ThemeType {
+  CLASSIC = 'classic',
+  NATURE = 'nature',
+  SPACE = 'space',
+  FANTASY = 'fantasy',
+  MINIMALIST = 'minimalist',
+  NEON = 'neon',
+  OCEAN = 'ocean',
+  VINTAGE = 'vintage'
+}
+
 export interface CardFaceStyle {
+  // Card number/face styles
   fontFamily: string;
   fontSize: string;
   fontWeight: string;
   textShadow?: string;
+  
+  // Special card face images (for J, Q, K, A)
+  aceImage?: string;
+  jackImage?: string;
+  queenImage?: string;
+  kingImage?: string;
+  
+  // Suit symbol customization
   suitStyle?: {
     hearts: string;
     diamonds: string;
     clubs: string;
     spades: string;
   };
+  
+  // Card decoration patterns
   patternUrl?: string;
   patternOpacity?: number;
 }
 
-export interface Theme {
+export interface ThemeConfig {
   name: string;
-  background: string;
+  type: ThemeType;
+  
+  // Background
   backgroundImage?: string;
   backgroundGradient?: string;
-  boardBackground: string;
+  backgroundColor: string;
+  backgroundBlur?: string;
+  
+  // Card appearance
   cardBackground: string;
   cardBackImage?: string;
   cardBackPattern?: string;
   cardBorder: string;
-  cardRadius?: string;
-  cardFace?: CardFaceStyle;
-  redSuitColor?: string;
-  blackSuitColor?: string;
-  buttonBackground: string;
-  buttonHoverBackground: string;
-  buttonText: string;
-  text: string;
+  cardShadow: string;
+  cardRadius: string;
+  
+  // Card face customization
+  cardFace: CardFaceStyle;
+  
+  // Colors
+  redSuitColor: string;
+  blackSuitColor: string;
+  
+  // UI Elements
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
+  buttonBackground: string;
+  buttonText: string;
+  buttonHoverBackground: string;
   shadowColor: string;
-  overlayBackground: string;
+  
+  // Special effects
   glowEffect?: string;
   particleEffect?: boolean;
   animationStyle?: 'smooth' | 'bouncy' | 'elegant' | 'playful';
+  
+  // Foundation and FreeCell styles
   foundationStyle?: {
     background: string;
     border: string;
     symbol?: string;
   };
+  
   freeCellStyle?: {
     background: string;
     border: string;
   };
 }
 
-export const themes: Record<string, Theme> = {
-  classic: {
+export const themes: Record<ThemeType, ThemeConfig> = {
+  [ThemeType.CLASSIC]: {
     name: 'Classic',
-    background: '#2c5530',
+    type: ThemeType.CLASSIC,
+    backgroundColor: '#2c5530',
     backgroundGradient: 'radial-gradient(ellipse at center, #3a6b3e 0%, #1e3f20 100%)',
-    boardBackground: 'rgba(0, 0, 0, 0.1)',
     cardBackground: '#ffffff',
     cardBorder: '1px solid #333333',
+    cardShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
     cardRadius: '8px',
     cardFace: {
       fontFamily: 'Georgia, serif',
@@ -66,26 +104,26 @@ export const themes: Record<string, Theme> = {
     },
     redSuitColor: '#d32f2f',
     blackSuitColor: '#1a1a1a',
-    buttonBackground: 'rgba(255, 255, 255, 0.95)',
-    buttonHoverBackground: '#f5f5f5',
-    buttonText: '#333333',
-    text: '#ffffff',
     primaryColor: '#4CAF50',
     secondaryColor: '#81C784',
     accentColor: '#FFD700',
+    buttonBackground: 'rgba(255, 255, 255, 0.95)',
+    buttonText: '#333333',
+    buttonHoverBackground: '#f5f5f5',
     shadowColor: 'rgba(0, 0, 0, 0.15)',
-    overlayBackground: 'rgba(0, 0, 0, 0.8)',
     animationStyle: 'smooth'
   },
-  nature: {
+  
+  [ThemeType.NATURE]: {
     name: 'Nature',
-    background: '#4a6741',
+    type: ThemeType.NATURE,
+    backgroundColor: '#4a6741',
     backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJsZWFmIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTEwMCwzMCBRNzAsNjAgNTAsOTAgVDMwLDE1MCBRNjAsMTMwIDkwLDExMCBUMTUwLDcwIFExMzAsNTAgMTAwLDMwIFoiIGZpbGw9IiM2OGE1NGEiIG9wYWNpdHk9IjAuMiIvPjxwYXRoIGQ9Ik0xNzAsODAgUTE0MCwxMTAgMTIwLDE0MCBUMTAWLDE5MCBRMTMwLDE3MCAxNTAsMTUwIFQxOTAsMTEwIFExODAsMTAwIDE3MCw4MCBaIiBmaWxsPSIjNGE3YzM0IiBvcGFjaXR5PSIwLjE1Ii8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNGE2NzQxIi8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNsZWFmKSIvPjwvc3ZnPg==)',
     backgroundGradient: 'linear-gradient(135deg, #667c3e 0%, #4a6741 50%, #3a5431 100%)',
-    boardBackground: 'rgba(0, 0, 0, 0.1)',
     cardBackground: '#fdfbf7',
     cardBackImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJ2aW5lIiB4PSIwIiB5PSIwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0yMCwyIEMyMCwyIDI1LDggMjAsMTUgQzE1LDIyIDI1LDI4IDIwLDM4IiBzdHJva2U9IiM0YTdjMzQiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iMC40Ii8+PGNpcmNsZSBjeD0iMTgiIGN5PSIxMCIgcj0iMyIgZmlsbD0iIzY4YTU0YSIgb3BhY2l0eT0iMC4zIi8+PGNpcmNsZSBjeD0iMjIiIGN5PSIzMCIgcj0iMyIgZmlsbD0iIzY4YTU0YSIgb3BhY2l0eT0iMC4zIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNmE4ZDRhIi8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCN2aW5lKSIvPjwvc3ZnPg==)',
     cardBorder: '1px solid #8b7355',
+    cardShadow: '0 3px 6px rgba(107, 142, 35, 0.2)',
     cardRadius: '10px',
     cardFace: {
       fontFamily: 'Optima, Candara, sans-serif',
@@ -96,15 +134,13 @@ export const themes: Record<string, Theme> = {
     },
     redSuitColor: '#c1392d',
     blackSuitColor: '#2d4a2b',
-    buttonBackground: 'rgba(251, 248, 240, 0.95)',
-    buttonHoverBackground: '#f4f1e8',
-    buttonText: '#3a5431',
-    text: '#ffffff',
     primaryColor: '#6b8e23',
     secondaryColor: '#8fbc8f',
     accentColor: '#ffd700',
+    buttonBackground: 'rgba(251, 248, 240, 0.95)',
+    buttonText: '#3a5431',
+    buttonHoverBackground: '#f4f1e8',
     shadowColor: 'rgba(74, 103, 65, 0.2)',
-    overlayBackground: 'rgba(0, 0, 0, 0.8)',
     animationStyle: 'smooth',
     foundationStyle: {
       background: 'rgba(107, 142, 35, 0.15)',
@@ -115,15 +151,17 @@ export const themes: Record<string, Theme> = {
       border: '2px solid #8b7355'
     }
   },
-  space: {
+  
+  [ThemeType.SPACE]: {
     name: 'Space',
-    background: '#0a0e27',
+    type: ThemeType.SPACE,
+    backgroundColor: '#0a0e27',
     backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxmaWx0ZXIgaWQ9InN0YXJzIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9IjAuMDIiIG51bU9jdGF2ZXM9IjEiIHNlZWQ9IjUiLz48ZmVDb2xvck1hdHJpeCB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMSIvPjwvZmlsdGVyPjxyYWRpYWxHcmFkaWVudCBpZD0ibmVidWxhIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNGEyNWE5IiBzdG9wLW9wYWNpdHk9IjAuMyIvPjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMWU0Nzg4IiBzdG9wLW9wYWNpdHk9IjAuMiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBhMGUyNyIgc3RvcC1vcGFjaXR5PSIwIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzBhMGUyNyIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjbmVidWxhKSIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNzdGFycykiIG9wYWNpdHk9IjAuNCIvPjwvc3ZnPg==)',
     backgroundGradient: 'radial-gradient(ellipse at top, #1a1f4e 0%, #0a0e27 50%, #040613 100%)',
-    boardBackground: 'rgba(255, 255, 255, 0.05)',
     cardBackground: 'linear-gradient(135deg, #1e1e3f 0%, #2a2a5e 100%)',
     cardBackImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxyYWRpYWxHcmFkaWVudCBpZD0icGxhbmV0Ij48c3RvcCBvZmZzZXQ9IjMwJSIgc3RvcC1jb2xvcj0iIzRhNWJhOSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzFhMmY3YSIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxZTFmNGUiLz48Y2lyY2xlIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjMwJSIgZmlsbD0idXJsKCNwbGFuZXQpIiBvcGFjaXR5PSIwLjYiLz48ZWxsaXBzZSBjeD0iNTAlIiBjeT0iNTAlIiByeD0iNDUlIiByeT0iMTAlIiBmaWxsPSJub25lIiBzdHJva2U9IiM2YTdhZGYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC4zIiB0cmFuc2Zvcm09InJvdGF0ZSgtMjAgNTAgNTApIi8+PC9zdmc+)',
     cardBorder: '1px solid #4a5ba9',
+    cardShadow: '0 4px 8px rgba(106, 122, 223, 0.3), 0 0 20px rgba(106, 122, 223, 0.1)',
     cardRadius: '12px',
     cardFace: {
       fontFamily: 'Orbitron, monospace',
@@ -133,15 +171,13 @@ export const themes: Record<string, Theme> = {
     },
     redSuitColor: '#ff6b9d',
     blackSuitColor: '#66d9ef',
-    buttonBackground: 'linear-gradient(135deg, #2a2a5e 0%, #3a3a7e 100%)',
-    buttonHoverBackground: 'linear-gradient(135deg, #3a3a7e 0%, #4a4a9e 100%)',
-    buttonText: '#e0e0ff',
-    text: '#ffffff',
     primaryColor: '#6a7adf',
     secondaryColor: '#4a5ba9',
     accentColor: '#ffd93d',
+    buttonBackground: 'linear-gradient(135deg, #2a2a5e 0%, #3a3a7e 100%)',
+    buttonText: '#e0e0ff',
+    buttonHoverBackground: 'linear-gradient(135deg, #3a3a7e 0%, #4a4a9e 100%)',
     shadowColor: 'rgba(106, 122, 223, 0.4)',
-    overlayBackground: 'rgba(0, 0, 0, 0.9)',
     glowEffect: '0 0 30px rgba(106, 122, 223, 0.5)',
     particleEffect: true,
     animationStyle: 'bouncy',
@@ -155,15 +191,17 @@ export const themes: Record<string, Theme> = {
       border: '2px solid #4a5ba9'
     }
   },
-  fantasy: {
+  
+  [ThemeType.FANTASY]: {
     name: 'Fantasy',
-    background: '#2e1a47',
+    type: ThemeType.FANTASY,
+    backgroundColor: '#2e1a47',
     backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJtYWdpYyIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjMwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4YTRmYTkiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjIiLz48cGF0aCBkPSJNNTAsMjAgTDU4LDQwIEw4MCw0MiBMNjUsNTUgTDcwLDc4IEw1MCw2NSBMMzAsNzggTDM1LDU1IEwyMCw0MiBMNDIsNDAgWiIgZmlsbD0iI2ZmYTVjOSIgb3BhY2l0eT0iMC4xIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmUxYTQ3Ii8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNtYWdpYykiLz48L3N2Zz4=)',
     backgroundGradient: 'radial-gradient(ellipse at center, #4a2969 0%, #2e1a47 60%, #1a0e2e 100%)',
-    boardBackground: 'rgba(255, 255, 255, 0.08)',
     cardBackground: 'linear-gradient(135deg, #f3e7f9 0%, #e8d5f2 100%)',
     cardBackPattern: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJydW5lcyIgeD0iMCIgeT0iMCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48dGV4dCB4PSIxNSIgeT0iMjAiIGZvbnQtZmFtaWx5PSJzZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzhhNGZhOSIgb3BhY2l0eT0iMC4zIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7YkjwvdGV4dD48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiM0YTI5NjkiLz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3J1bmVzKSIvPjwvc3ZnPg==)',
     cardBorder: '2px solid #8a4fa9',
+    cardShadow: '0 4px 12px rgba(138, 79, 169, 0.3), 0 0 20px rgba(255, 165, 201, 0.1)',
     cardRadius: '15px',
     cardFace: {
       fontFamily: 'Luminari, fantasy',
@@ -179,15 +217,13 @@ export const themes: Record<string, Theme> = {
     },
     redSuitColor: '#d946a6',
     blackSuitColor: '#6a4c93',
-    buttonBackground: 'linear-gradient(135deg, #8a4fa9 0%, #a668c3 100%)',
-    buttonHoverBackground: 'linear-gradient(135deg, #9a5fb9 0%, #b678d3 100%)',
-    buttonText: '#ffffff',
-    text: '#ffffff',
     primaryColor: '#a668c3',
     secondaryColor: '#8a4fa9',
     accentColor: '#ffa5c9',
+    buttonBackground: 'linear-gradient(135deg, #8a4fa9 0%, #a668c3 100%)',
+    buttonText: '#ffffff',
+    buttonHoverBackground: 'linear-gradient(135deg, #9a5fb9 0%, #b678d3 100%)',
     shadowColor: 'rgba(166, 104, 195, 0.3)',
-    overlayBackground: 'rgba(0, 0, 0, 0.9)',
     glowEffect: '0 0 25px rgba(255, 165, 201, 0.3)',
     animationStyle: 'elegant',
     foundationStyle: {
@@ -200,13 +236,15 @@ export const themes: Record<string, Theme> = {
       border: '2px solid #8a4fa9'
     }
   },
-  minimalist: {
+  
+  [ThemeType.MINIMALIST]: {
     name: 'Minimalist',
-    background: '#f5f5f5',
+    type: ThemeType.MINIMALIST,
+    backgroundColor: '#f5f5f5',
     backgroundGradient: 'linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%)',
-    boardBackground: 'rgba(0, 0, 0, 0.02)',
     cardBackground: '#ffffff',
     cardBorder: '1px solid #e0e0e0',
+    cardShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
     cardRadius: '4px',
     cardFace: {
       fontFamily: 'Helvetica Neue, Arial, sans-serif',
@@ -215,15 +253,13 @@ export const themes: Record<string, Theme> = {
     },
     redSuitColor: '#ff4444',
     blackSuitColor: '#333333',
-    buttonBackground: '#ffffff',
-    buttonHoverBackground: '#fafafa',
-    buttonText: '#333333',
-    text: '#212121',
     primaryColor: '#666666',
     secondaryColor: '#999999',
     accentColor: '#ff6b6b',
+    buttonBackground: '#ffffff',
+    buttonText: '#333333',
+    buttonHoverBackground: '#fafafa',
     shadowColor: 'rgba(0, 0, 0, 0.08)',
-    overlayBackground: 'rgba(255, 255, 255, 0.95)',
     animationStyle: 'smooth',
     foundationStyle: {
       background: 'transparent',
@@ -234,13 +270,15 @@ export const themes: Record<string, Theme> = {
       border: '1px solid #e0e0e0'
     }
   },
-  neon: {
+  
+  [ThemeType.NEON]: {
     name: 'Neon',
-    background: '#0a0a0a',
+    type: ThemeType.NEON,
+    backgroundColor: '#0a0a0a',
     backgroundGradient: 'linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 100%)',
-    boardBackground: 'rgba(255, 255, 255, 0.02)',
     cardBackground: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
     cardBorder: '2px solid #00ffff',
+    cardShadow: '0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.2)',
     cardRadius: '10px',
     cardFace: {
       fontFamily: 'Rajdhani, sans-serif',
@@ -250,15 +288,13 @@ export const themes: Record<string, Theme> = {
     },
     redSuitColor: '#ff00ff',
     blackSuitColor: '#00ffff',
-    buttonBackground: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-    buttonHoverBackground: 'linear-gradient(135deg, #2a2a3e 0%, #26314e 100%)',
-    buttonText: '#00ffff',
-    text: '#ffffff',
     primaryColor: '#00ffff',
     secondaryColor: '#ff00ff',
     accentColor: '#ffff00',
+    buttonBackground: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+    buttonText: '#00ffff',
+    buttonHoverBackground: 'linear-gradient(135deg, #2a2a3e 0%, #26314e 100%)',
     shadowColor: 'rgba(0, 255, 255, 0.4)',
-    overlayBackground: 'rgba(10, 10, 10, 0.95)',
     glowEffect: '0 0 30px rgba(0, 255, 255, 0.7)',
     animationStyle: 'playful',
     foundationStyle: {
@@ -271,15 +307,17 @@ export const themes: Record<string, Theme> = {
       border: '2px solid #ff00ff'
     }
   },
-  ocean: {
+  
+  [ThemeType.OCEAN]: {
     name: 'Ocean',
-    background: '#0c2461',
+    type: ThemeType.OCEAN,
+    backgroundColor: '#0c2461',
     backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJ3YXZlcyIgeD0iMCIgeT0iMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxMDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0wLDUwIFE1MCwyMCAxMDAsNTAgVDE1MCwyMCBMMjAwLDUwIEwyMDAsMTAwIEwwLDEwMCBaIiBmaWxsPSIjMWU1Zjc0IiBvcGFjaXR5PSIwLjIiLz48cGF0aCBkPSJNMCw3MCBRNTI3MCA1MCw3MCBUMTUwLDcwIEwyMDAsNzAgTDIwMCwxMDAgTDAsMTAwIFoiIGZpbGw9IiM0YTkwYTQiIG9wYWNpdHk9IjAuMTUiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwYzI0NjEiLz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3dhdmVzKSIvPjwvc3ZnPg==)',
     backgroundGradient: 'linear-gradient(180deg, #0c2461 0%, #1e5f74 50%, #4a90a4 100%)',
-    boardBackground: 'rgba(255, 255, 255, 0.1)',
     cardBackground: 'linear-gradient(135deg, #e8f5f7 0%, #d1ecf1 100%)',
     cardBackImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJidWJibGVzIiB4PSIwIiB5PSIwIiB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRhOTBhNCIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjMiLz48Y2lyY2xlIGN4PSIzNSIgY3k9IjI1IiByPSIzIiBmaWxsPSJub25lIiBzdHJva2U9IiM0YTkwYTQiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC4yIi8+PGNpcmNsZSBjeD0iMjAiIGN5PSI0MCIgcj0iNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGE5MGE0IiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9IjAuMjUiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxZTVmNzQiLz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2J1YmJsZXMpIi8+PC9zdmc+)',
     cardBorder: '1px solid #4a90a4',
+    cardShadow: '0 3px 10px rgba(74, 144, 164, 0.2)',
     cardRadius: '12px',
     cardFace: {
       fontFamily: 'Merriweather, serif',
@@ -288,15 +326,13 @@ export const themes: Record<string, Theme> = {
     },
     redSuitColor: '#ff6b6b',
     blackSuitColor: '#1e5f74',
-    buttonBackground: 'linear-gradient(135deg, #4a90a4 0%, #67b7d1 100%)',
-    buttonHoverBackground: 'linear-gradient(135deg, #5aa0b4 0%, #77c7e1 100%)',
-    buttonText: '#ffffff',
-    text: '#ffffff',
     primaryColor: '#4a90a4',
     secondaryColor: '#1e5f74',
     accentColor: '#67b7d1',
+    buttonBackground: 'linear-gradient(135deg, #4a90a4 0%, #67b7d1 100%)',
+    buttonText: '#ffffff',
+    buttonHoverBackground: 'linear-gradient(135deg, #5aa0b4 0%, #77c7e1 100%)',
     shadowColor: 'rgba(74, 144, 164, 0.25)',
-    overlayBackground: 'rgba(0, 50, 80, 0.9)',
     animationStyle: 'smooth',
     foundationStyle: {
       background: 'rgba(74, 144, 164, 0.1)',
@@ -308,14 +344,16 @@ export const themes: Record<string, Theme> = {
       border: '2px solid #67b7d1'
     }
   },
-  vintage: {
+  
+  [ThemeType.VINTAGE]: {
     name: 'Vintage',
-    background: '#3e2723',
+    type: ThemeType.VINTAGE,
+    backgroundColor: '#3e2723',
     backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJ2aW50YWdlIiB4PSIwIiB5PSIwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiM3OTU1NDgiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjEiIGZpbGw9IiM3OTU1NDgiIG9wYWNpdHk9IjAuMyIvPjxjaXJjbGUgY3g9IjMwIiBjeT0iMTAiIHI9IjEiIGZpbGw9IiM3OTU1NDgiIG9wYWNpdHk9IjAuMyIvPjxjaXJjbGUgY3g9IjEwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiM3OTU1NDgiIG9wYWNpdHk9IjAuMyIvPjxjaXJjbGUgY3g9IjMwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiM3OTU1NDgiIG9wYWNpdHk9IjAuMyIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzNlMjcyMyIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjdmludGFnZSkiLz48L3N2Zz4=)',
     backgroundGradient: 'radial-gradient(ellipse at center, #5d4037 0%, #3e2723 100%)',
-    boardBackground: 'rgba(0, 0, 0, 0.1)',
     cardBackground: '#fef5e7',
     cardBorder: '2px solid #795548',
+    cardShadow: '0 2px 8px rgba(121, 85, 72, 0.3)',
     cardRadius: '6px',
     cardFace: {
       fontFamily: 'Playfair Display, serif',
@@ -326,15 +364,13 @@ export const themes: Record<string, Theme> = {
     },
     redSuitColor: '#8b0000',
     blackSuitColor: '#2c1810',
-    buttonBackground: '#f5e6d3',
-    buttonHoverBackground: '#efdecd',
-    buttonText: '#3e2723',
-    text: '#ffffff',
     primaryColor: '#8d6e63',
     secondaryColor: '#795548',
     accentColor: '#d7ccc8',
+    buttonBackground: '#f5e6d3',
+    buttonText: '#3e2723',
+    buttonHoverBackground: '#efdecd',
     shadowColor: 'rgba(121, 85, 72, 0.25)',
-    overlayBackground: 'rgba(0, 0, 0, 0.9)',
     animationStyle: 'elegant',
     foundationStyle: {
       background: 'rgba(121, 85, 72, 0.1)',
@@ -345,120 +381,5 @@ export const themes: Record<string, Theme> = {
       background: 'rgba(141, 110, 99, 0.08)',
       border: '2px solid #8d6e63'
     }
-  },
-  // Keep some of the old themes for backward compatibility
-  dark: {
-    name: 'Dark',
-    background: '#1a1a1a',
-    boardBackground: 'rgba(255, 255, 255, 0.05)',
-    cardBackground: '#2d2d2d',
-    cardBorder: '#444444',
-    buttonBackground: '#333333',
-    buttonHoverBackground: '#444444',
-    buttonText: '#ffffff',
-    text: '#e0e0e0',
-    primaryColor: '#4a9eff',
-    secondaryColor: '#ff6b6b',
-    accentColor: '#ffd93d',
-    shadowColor: 'rgba(0, 0, 0, 0.5)',
-    overlayBackground: 'rgba(0, 0, 0, 0.9)',
-  },
-  forest: {
-    name: 'Forest',
-    background: '#1b4332',
-    boardBackground: 'rgba(255, 255, 255, 0.08)',
-    cardBackground: '#ffffff',
-    cardBorder: '#2d6a4f',
-    buttonBackground: '#2d6a4f',
-    buttonHoverBackground: '#40916c',
-    buttonText: '#ffffff',
-    text: '#ffffff',
-    primaryColor: '#52b788',
-    secondaryColor: '#95d5b2',
-    accentColor: '#ffb700',
-    shadowColor: 'rgba(0, 0, 0, 0.4)',
-    overlayBackground: 'rgba(27, 67, 50, 0.95)',
-  },
-  sunset: {
-    name: 'Sunset',
-    background: '#833ab4',
-    boardBackground: 'rgba(255, 255, 255, 0.1)',
-    cardBackground: '#ffffff',
-    cardBorder: '#c13584',
-    buttonBackground: '#fd1d1d',
-    buttonHoverBackground: '#ff5757',
-    buttonText: '#ffffff',
-    text: '#ffffff',
-    primaryColor: '#fd1d1d',
-    secondaryColor: '#fcb045',
-    accentColor: '#833ab4',
-    shadowColor: 'rgba(0, 0, 0, 0.3)',
-    overlayBackground: 'rgba(131, 58, 180, 0.9)',
-  },
-  minimal: {
-    name: 'Minimal',
-    background: '#f5f5f5',
-    boardBackground: 'rgba(0, 0, 0, 0.02)',
-    cardBackground: '#ffffff',
-    cardBorder: '#e0e0e0',
-    buttonBackground: '#424242',
-    buttonHoverBackground: '#616161',
-    buttonText: '#ffffff',
-    text: '#212121',
-    primaryColor: '#424242',
-    secondaryColor: '#757575',
-    accentColor: '#ff5252',
-    shadowColor: 'rgba(0, 0, 0, 0.1)',
-    overlayBackground: 'rgba(255, 255, 255, 0.95)',
-  },
-  retro: {
-    name: 'Retro',
-    background: '#8b956d',
-    boardBackground: 'rgba(0, 0, 0, 0.1)',
-    cardBackground: '#f4f3ee',
-    cardBorder: '#5c6650',
-    buttonBackground: '#c97064',
-    buttonHoverBackground: '#d98374',
-    buttonText: '#f4f3ee',
-    text: '#f4f3ee',
-    primaryColor: '#c97064',
-    secondaryColor: '#8b956d',
-    accentColor: '#e8b04b',
-    shadowColor: 'rgba(0, 0, 0, 0.3)',
-    overlayBackground: 'rgba(139, 149, 109, 0.95)',
-  },
-  midnight: {
-    name: 'Midnight',
-    background: '#0f0e17',
-    boardBackground: 'rgba(255, 255, 255, 0.03)',
-    cardBackground: '#1f1e2e',
-    cardBorder: '#2e2c3e',
-    buttonBackground: '#ff8906',
-    buttonHoverBackground: '#ffa826',
-    buttonText: '#0f0e17',
-    text: '#fffffe',
-    primaryColor: '#ff8906',
-    secondaryColor: '#f25f4c',
-    accentColor: '#e53170',
-    shadowColor: 'rgba(0, 0, 0, 0.7)',
-    overlayBackground: 'rgba(15, 14, 23, 0.95)',
-  },
-  pastel: {
-    name: 'Pastel',
-    background: '#ffd6e8',
-    boardBackground: 'rgba(255, 255, 255, 0.3)',
-    cardBackground: '#ffffff',
-    cardBorder: '#ffb3d9',
-    buttonBackground: '#a8dadc',
-    buttonHoverBackground: '#98cacc',
-    buttonText: '#264653',
-    text: '#264653',
-    primaryColor: '#a8dadc',
-    secondaryColor: '#f1faee',
-    accentColor: '#e63946',
-    shadowColor: 'rgba(0, 0, 0, 0.1)',
-    overlayBackground: 'rgba(255, 214, 232, 0.95)',
-  },
+  }
 };
-
-export const defaultTheme = themes.classic;
