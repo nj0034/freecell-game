@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { GameState, Card, CardStack } from '../../types/game.types';
+import { Card, CardStack } from '../../types/game.types';
 import { DifficultyLevel } from '../../utils/difficulty';
-import { performCascadingSafeAutoMoves } from '../../utils/safeAutoMove';
-import { findAllMovesToFoundations } from '../../utils/moveAllToFoundations';
-import { executeAutoMove } from '../../utils/autoMove';
 import { useGameStore } from '../../store/gameStore';
+import { isGameDeadlocked } from '../../utils/deadlockDetection';
+import { DeadlockModal } from '../DeadlockModal/DeadlockModal';
 import { Tableau } from '../Tableau/Tableau';
 import { Foundation } from '../Foundation/Foundation';
 import { FreeCell } from '../FreeCell/FreeCell';
@@ -38,8 +37,8 @@ export const GameBoard: React.FC = () => {
     undo,
     canUndo,
     newGame,
+    restartGame,
     toggleSafeMode,
-    setIsAutoMoving,
     setShowWinAnimation
   } = useGameStore();
 
@@ -59,6 +58,8 @@ export const GameBoard: React.FC = () => {
     message: ''
   });
   const [gameTime, setGameTime] = useState(0);
+  const [showDeadlockModal, setShowDeadlockModal] = useState(false);
+  const [deadlockChecked, setDeadlockChecked] = useState(false);
 
   // 타이머 설정
   useEffect(() => {
@@ -71,6 +72,32 @@ export const GameBoard: React.FC = () => {
     return () => clearInterval(timer);
   }, [gameState.isGameWon]);
 
+  // 데드락 감지
+  useEffect(() => {
+    // 게임이 시작되지 않았거나 이미 이긴 경우 체크하지 않음
+    if (gameState.moves === 0 || gameState.isGameWon) {
+      setDeadlockChecked(false);
+      return;
+    }
+
+    // 이미 체크했고 모달이 표시 중이면 다시 체크하지 않음
+    if (deadlockChecked && showDeadlockModal) {
+      return;
+    }
+
+    // 약간의 지연 후 데드락 체크 (카드 이동 애니메이션 완료 후)
+    const checkTimer = setTimeout(() => {
+      if (isGameDeadlocked(gameState)) {
+        setShowDeadlockModal(true);
+        setDeadlockChecked(true);
+      } else {
+        setDeadlockChecked(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(checkTimer);
+  }, [gameState, deadlockChecked, showDeadlockModal]);
+
 
   const handleNewGame = (difficulty?: DifficultyLevel) => {
     const selectedDifficulty = difficulty || currentDifficulty;
@@ -80,6 +107,15 @@ export const GameBoard: React.FC = () => {
     }
     newGame(selectedDifficulty);
     setGameTime(0); // 새 게임 시작 시 시간 초기화
+    setShowDeadlockModal(false); // 데드락 모달 닫기
+    setDeadlockChecked(false);
+  };
+
+  const handleRestartGame = () => {
+    restartGame();
+    setGameTime(0); // 다시 시작 시 시간 초기화
+    setShowDeadlockModal(false); // 데드락 모달 닫기
+    setDeadlockChecked(false);
   };
 
   const handleUndo = () => {
@@ -104,6 +140,8 @@ export const GameBoard: React.FC = () => {
         type: 'success',
         message: '↩️ 실행 취소 완료!'
       });
+      setShowDeadlockModal(false); // 실행 취소 시 데드락 모달 닫기
+      setDeadlockChecked(false);
     } else {
       setUndoMessage({
         show: true,
@@ -112,57 +150,15 @@ export const GameBoard: React.FC = () => {
       });
     }
   };
-
-  const handleHint = () => {
-    // 힌트 표시 로직
-  };
-
-  const handleAutoMove = async () => {
-    if (isAutoMoving) return; // Prevent multiple auto-moves at the same time
-    
-    let moves: Array<{card: any; from: any; to: any}>;
-    if (safeMode) {
-      // Safe mode: 안전한 이동만
-      moves = performCascadingSafeAutoMoves(gameState);
-    } else {
-      // Not safe mode: 모든 가능한 이동
-      moves = findAllMovesToFoundations(gameState);
-    }
-    
-    if (moves.length > 0) {
-      setIsAutoMoving(true); // Start auto-moving
-      
-      try {
-        // Execute moves one by one with animation delay
-        for (let i = 0; i < moves.length; i++) {
-          const move = moves[i];
-          
-          // Apply single move
-          updateGameState((prevState: GameState) => {
-            const newState = executeAutoMove(
-              move.card,
-              move.from,
-              move.to,
-              prevState
-            );
-            return newState;
-          });
-          
-          // Wait for animation to complete before next move
-          if (i < moves.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 300)); // 300ms delay between moves
-          }
-        }
-        
-      } finally {
-        setIsAutoMoving(false); // End auto-moving
-      }
-    }
-  };
   
   const handleSafeModeToggle = () => {
     toggleSafeMode();
   };
+
+  // 실행 취소 메시지 닫기 콜백
+  const handleCloseUndoMessage = useCallback(() => {
+    setUndoMessage(prev => ({ ...prev, show: false }));
+  }, []);
 
   const boardVariants = {
     initial: { opacity: 0, scale: 0.9 },
@@ -216,9 +212,8 @@ export const GameBoard: React.FC = () => {
             gameTime={gameTime}
             currentDifficulty={currentDifficulty}
             onNewGame={handleNewGame}
+            onRestartGame={handleRestartGame}
             onUndo={handleUndo}
-            onHint={handleHint}
-            onAutoMove={handleAutoMove}
             canUndo={canUndo()}
             safeMode={safeMode}
             onSafeModeToggle={handleSafeModeToggle}
@@ -509,6 +504,19 @@ export const GameBoard: React.FC = () => {
           )}
         </AnimatePresence>
         
+        <DeadlockModal
+          isOpen={showDeadlockModal}
+          canUndo={canUndo()}
+          onUndo={() => {
+            handleUndo();
+            setShowDeadlockModal(false);
+          }}
+          onRestart={() => {
+            handleRestartGame();
+            setShowDeadlockModal(false);
+          }}
+        />
+        
         <WarningMessage
           show={warningMessage.show}
           maxCards={warningMessage.maxCards}
@@ -520,7 +528,7 @@ export const GameBoard: React.FC = () => {
           show={undoMessage.show}
           type={undoMessage.type}
           message={undoMessage.message}
-          onClose={() => setUndoMessage({ show: false, type: 'success', message: '' })}
+          onClose={handleCloseUndoMessage}
         />
       </BoardContainer>
     </DndProvider>

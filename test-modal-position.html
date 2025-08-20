@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모달 위치 및 다시 시작 확인 테스트</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 2.5em;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .modal-demo {
+            position: relative;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 150px;
+        }
+        .modal-content {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .modal-title {
+            font-size: 1.5em;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+        .modal-message {
+            margin: 0 0 25px 0;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            min-width: 100px;
+            transition: all 0.3s ease;
+        }
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-confirm {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .check {
+            color: #4CAF50;
+            font-size: 1.2em;
+        }
+        .new {
+            background: #FFD700;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ 모달 개선 사항 완료</h1>
+        
+        <div class="section">
+            <h2>📍 모달 위치 변경</h2>
+            <p>모달이 화면 하단으로 이동되었습니다 (하단에서 150px 위)</p>
+            <div class="modal-demo">
+                <div class="modal-content">
+                    <div class="modal-title">게임 다시 시작</div>
+                    <div class="modal-message">현재 진행 상황을 포기하고 같은 게임을 처음부터 다시 시작하시겠습니까?</div>
+                    <div class="button-group">
+                        <button class="btn btn-cancel">계속하기</button>
+                        <button class="btn btn-confirm">다시 시작</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔄 다시 시작 확인 모달 <span class="new">NEW</span></h2>
+            <ul class="feature-list">
+                <li>
+                    <span class="check">✅</span>
+                    <span>게임 진행 중(moves > 0) 다시 시작 클릭 시 확인 모달 표시</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>게임 시작 전(moves = 0)에는 모달 없이 바로 다시 시작</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>실수로 진행 상황을 잃는 것을 방지</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🎮 확인 모달 종류</h2>
+            <ul class="feature-list">
+                <li>
+                    <span class="check">✅</span>
+                    <span><strong>새 게임 모달:</strong> "현재 게임을 포기하고 새 게임을 시작하시겠습니까?"</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span><strong>다시 시작 모달:</strong> "현재 진행 상황을 포기하고 같은 게임을 처음부터 다시 시작하시겠습니까?"</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🎨 모달 스타일 개선</h2>
+            <ul class="feature-list">
+                <li>
+                    <span class="check">✅</span>
+                    <span>화면 하단 배치로 시야 방해 최소화</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>블러 효과와 어두운 오버레이로 집중도 향상</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>부드러운 애니메이션 효과</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>명확한 버튼 구분 (계속하기 vs 액션)</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section" style="background: rgba(76, 175, 80, 0.2); border-color: #4CAF50;">
+            <h2>✔️ 완료된 변경사항</h2>
+            <ul class="feature-list">
+                <li><span class="check">✅</span> 다시 시작 버튼에 확인 모달 추가</li>
+                <li><span class="check">✅</span> 모달 위치를 화면 하단으로 이동 (padding-bottom: 150px)</li>
+                <li><span class="check">✅</span> 게임 상태에 따른 조건부 모달 표시</li>
+                <li><span class="check">✅</span> 두 가지 모달 (새 게임, 다시 시작) 독립적으로 관리</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        console.log('🎉 모달 개선 완료!');
+        console.log('📍 모달 위치: 화면 하단 (padding-bottom: 150px)');
+        console.log('🔄 다시 시작 확인 모달 추가됨');
+        console.log('✅ 모든 요청사항이 구현되었습니다.');
+    </script>
+</body>
+</html>

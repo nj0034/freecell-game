@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { GameState } from '../../types/game.types';
 import { DifficultyLevel } from '../../utils/difficulty';
 import { DifficultySelector } from '../DifficultySelector/DifficultySelector';
 import { HamburgerMenu } from '../HamburgerMenu/HamburgerMenu';
+import { ConfirmationModal } from '../ConfirmationModal/ConfirmationModal';
 
 const ControlsContainer = styled.div`
   max-width: 1200px;
@@ -83,9 +84,8 @@ interface GameControlsProps {
   gameTime: number;
   currentDifficulty: DifficultyLevel;
   onNewGame: (difficulty?: DifficultyLevel) => void;
+  onRestartGame: () => void;
   onUndo: () => void;
-  onHint: () => void;
-  onAutoMove: () => void;
   canUndo?: boolean;
   safeMode: boolean;
   onSafeModeToggle: () => void;
@@ -97,14 +97,16 @@ export const GameControls: React.FC<GameControlsProps> = ({
   gameTime,
   currentDifficulty,
   onNewGame,
+  onRestartGame,
   onUndo,
-  onHint,
-  onAutoMove,
   canUndo: canUndoProp = true,
   safeMode,
   onSafeModeToggle,
   isAutoMoving = false
 }) => {
+  const [showNewGameModal, setShowNewGameModal] = useState(false);
+  const [showRestartModal, setShowRestartModal] = useState(false);
+  const [pendingDifficulty, setPendingDifficulty] = useState<DifficultyLevel | undefined>(undefined);
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -116,21 +118,76 @@ export const GameControls: React.FC<GameControlsProps> = ({
     tap: { scale: 0.95 }
   };
 
+  const handleNewGameClick = (difficulty?: DifficultyLevel) => {
+    // 항상 확인 모달 표시
+    setPendingDifficulty(difficulty);
+    setShowNewGameModal(true);
+  };
+
+  const confirmNewGame = () => {
+    onNewGame(pendingDifficulty);
+    setShowNewGameModal(false);
+    setPendingDifficulty(undefined);
+  };
+
+  const cancelNewGame = () => {
+    setShowNewGameModal(false);
+    setPendingDifficulty(undefined);
+  };
+
+  const handleRestartClick = () => {
+    // 게임이 진행 중일 때만 확인 모달 표시
+    if (gameState.moves > 0) {
+      setShowRestartModal(true);
+    } else {
+      onRestartGame();
+    }
+  };
+
+  const confirmRestart = () => {
+    onRestartGame();
+    setShowRestartModal(false);
+  };
+
+  const cancelRestart = () => {
+    setShowRestartModal(false);
+  };
+
   return (
     <ControlsContainer>
       <ButtonGroup>
         <HamburgerMenu
-          onNewGame={() => onNewGame()}
-          onHint={onHint}
+          onNewGame={() => handleNewGameClick()}
+          onHint={() => {}}
           safeMode={safeMode}
           onSafeModeToggle={onSafeModeToggle}
         />
         
         <DifficultySelector
           currentDifficulty={currentDifficulty}
-          onDifficultyChange={(difficulty) => onNewGame(difficulty)}
-          disabled={(gameState.moves > 0 && !gameState.isGameWon) || isAutoMoving}
+          onDifficultyChange={(difficulty) => handleNewGameClick(difficulty)}
+          disabled={isAutoMoving}
         />
+        
+        <ControlButton
+          variants={buttonVariants}
+          whileHover="hover"
+          whileTap="tap"
+          onClick={() => handleNewGameClick()}
+          disabled={isAutoMoving}
+        >
+          🎮 새 게임
+        </ControlButton>
+        
+        <ControlButton
+          variants={buttonVariants}
+          whileHover="hover"
+          whileTap="tap"
+          onClick={handleRestartClick}
+          disabled={isAutoMoving || gameState.moves === 0}
+        >
+          🔄 다시 시작
+        </ControlButton>
         
         <ControlButton
           variants={buttonVariants}
@@ -139,17 +196,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
           onClick={onUndo}
           disabled={!canUndoProp || isAutoMoving}
         >
-          ↩️ Undo
-        </ControlButton>
-        
-        <ControlButton
-          variants={buttonVariants}
-          whileHover="hover"
-          whileTap="tap"
-          onClick={onAutoMove}
-          disabled={isAutoMoving}
-        >
-          {safeMode ? '🎯 Safe Move' : '⚡ All to Home'}
+          ↩️ 실행 취소
         </ControlButton>
       </ButtonGroup>
       
@@ -185,6 +232,30 @@ export const GameControls: React.FC<GameControlsProps> = ({
           <span className="value">{formatTime(gameTime)}</span>
         </InfoItem>
       </InfoGroup>
+      
+      <ConfirmationModal
+        isOpen={showNewGameModal}
+        title="새 게임 시작"
+        message={
+          gameState.moves > 0 && !gameState.isGameWon
+            ? "현재 게임을 포기하고 새 게임을 시작하시겠습니까?"
+            : "새 게임을 시작하시겠습니까?"
+        }
+        confirmText="새 게임"
+        cancelText="취소"
+        onConfirm={confirmNewGame}
+        onCancel={cancelNewGame}
+      />
+      
+      <ConfirmationModal
+        isOpen={showRestartModal}
+        title="게임 다시 시작"
+        message="현재 진행 상황을 포기하고 같은 게임을 처음부터 다시 시작하시겠습니까?"
+        confirmText="다시 시작"
+        cancelText="계속하기"
+        onConfirm={confirmRestart}
+        onCancel={cancelRestart}
+      />
     </ControlsContainer>
   );
 };

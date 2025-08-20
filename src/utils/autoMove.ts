@@ -21,7 +21,10 @@ export const findAutoMoveDestination = (
   
   // 2. 두 번째 우선순위: 카드가 있는 테이블로 컬럼
   for (let i = 0; i < gameState.tableau.length; i++) {
-    if (i !== fromLocation.index && gameState.tableau[i].length > 0) {
+    // 같은 테이블로 컬럼에서 이동하는 경우만 체크
+    if (fromLocation.type === PileType.TABLEAU && i === fromLocation.index) continue;
+    
+    if (gameState.tableau[i].length > 0) {
       if (canMoveCard(card, gameState.tableau[i], PileType.TABLEAU)) {
         return { type: PileType.TABLEAU, index: i };
       }
@@ -31,7 +34,10 @@ export const findAutoMoveDestination = (
   // 3. 세 번째 우선순위: 빈 테이블로 컬럼 (빈줄)
   // 모든 카드가 빈 컬럼으로 이동 가능
   for (let i = 0; i < gameState.tableau.length; i++) {
-    if (i !== fromLocation.index && gameState.tableau[i].length === 0) {
+    // 같은 테이블로 컬럼에서 이동하는 경우만 체크
+    if (fromLocation.type === PileType.TABLEAU && i === fromLocation.index) continue;
+    
+    if (gameState.tableau[i].length === 0) {
       return { type: PileType.TABLEAU, index: i };
     }
   }

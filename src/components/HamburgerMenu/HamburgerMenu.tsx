@@ -96,13 +96,6 @@ const MenuItem = styled(motion.button)`
   }
 `;
 
-const Divider = styled.div`
-  height: 1px;
-  background: ${props => props.theme.cardBorder};
-  margin: 8px 0;
-  opacity: 0.3;
-`;
-
 const ToggleSwitch = styled.div<{ isOn: boolean }>`
   width: 40px;
   height: 22px;
@@ -161,8 +154,8 @@ const ColorPreview = styled.div<{ color: string }>`
 `;
 
 interface HamburgerMenuProps {
-  onNewGame: () => void;
-  onHint: () => void;
+  onNewGame: () => void; // Keep for backward compatibility but not used
+  onHint: () => void; // Keep for backward compatibility but not used
   safeMode: boolean;
   onSafeModeToggle: () => void;
 }
@@ -177,11 +170,6 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
   const [showThemes, setShowThemes] = useState(false);
   const { themeName, setTheme, availableThemes } = useTheme();
 
-  const handleItemClick = (action: () => void) => {
-    action();
-    setIsOpen(false);
-    setShowThemes(false);
-  };
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
@@ -210,25 +198,6 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            <MenuItem
-              onClick={() => handleItemClick(onNewGame)}
-              whileHover={{ x: 4 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span className="icon">🎮</span>
-              New Game
-            </MenuItem>
-            
-            <MenuItem
-              onClick={() => handleItemClick(onHint)}
-              whileHover={{ x: 4 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span className="icon">💡</span>
-              Hint
-            </MenuItem>
-            
-            <Divider />
             
             <MenuItem
               onClick={onSafeModeToggle}

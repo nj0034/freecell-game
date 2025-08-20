@@ -9,6 +9,8 @@ import { DifficultyLevel, difficultyConfigs } from '../utils/difficulty';
 interface GameStore {
   // Current game state
   gameState: GameState;
+  // Initial game state for restart
+  initialGameState: GameState | null;
   // History stack for undo functionality
   history: GameState[];
   // Current difficulty and undo tracking
@@ -26,6 +28,7 @@ interface GameStore {
   undo: () => boolean;
   canUndo: () => boolean;
   newGame: (difficulty: DifficultyLevel) => void;
+  restartGame: () => void;
   toggleSafeMode: () => void;
   setShowWinAnimation: (show: boolean) => void;
   setIsAutoMoving: (isMoving: boolean) => void;
@@ -37,6 +40,7 @@ export const useGameStore = create<GameStore>()(
     return {
       // Initial state
       gameState: initialGameState,
+      initialGameState: cloneGameState(initialGameState),
       history: [cloneGameState(initialGameState)],
       currentDifficulty: DifficultyLevel.MEDIUM,
       consecutiveUndoCount: 0,
@@ -128,11 +132,26 @@ export const useGameStore = create<GameStore>()(
         const newGameState = initializeGame(difficulty);
         set({
           gameState: newGameState,
+          initialGameState: cloneGameState(newGameState),
           history: [cloneGameState(newGameState)],
           currentDifficulty: difficulty,
           consecutiveUndoCount: 0,
           showWinAnimation: false
         });
+      },
+
+      restartGame: () => {
+        const { initialGameState } = get();
+        if (initialGameState) {
+          const restartedState = cloneGameState(initialGameState);
+          set({
+            gameState: restartedState,
+            history: [cloneGameState(restartedState)],
+            consecutiveUndoCount: 0,
+            showWinAnimation: false,
+            lastUndoTime: 0
+          });
+        }
       },
 
     toggleSafeMode: () => {

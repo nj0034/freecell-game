@@ -124,7 +124,7 @@ export const findMultiCardDestination = (
   fromIndex: number,
   fromColumnIndex: number,
   gameState: GameState
-): { columnIndex: number; canMove: boolean } | null => {
+): { columnIndex: number; canMove: boolean; isFreecell?: boolean; freecellIndex?: number } | null => {
   // 이동할 카드들
   const cardsToMove = cards.slice(fromIndex);
   if (cardsToMove.length === 0) return null;
@@ -158,6 +158,15 @@ export const findMultiCardDestination = (
     // 빈 컬럼인 경우
     if (targetColumn.length === 0) {
       return { columnIndex: i, canMove: true };
+    }
+  }
+  
+  // 3. 단일 카드인 경우 프리셀 확인
+  if (cardsToMove.length === 1) {
+    for (let i = 0; i < gameState.freeCells.length; i++) {
+      if (gameState.freeCells[i] === null) {
+        return { columnIndex: -1, canMove: true, isFreecell: true, freecellIndex: i };
+      }
     }
   }
   

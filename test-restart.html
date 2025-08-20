@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게임 컨트롤 변경 사항 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2e7d32;
+        }
+        .section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2e7d32;
+        }
+        .completed {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .removed {
+            color: #d32f2f;
+            text-decoration: line-through;
+        }
+        .added {
+            color: #1976d2;
+            font-weight: bold;
+        }
+        ul {
+            margin: 10px 0;
+        }
+        .button-preview {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .modal-preview {
+            background: rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>✅ 게임 컨트롤 변경 사항 완료</h1>
+    
+    <div class="section">
+        <h2>🎮 버튼 변경 사항</h2>
+        <ul>
+            <li class="removed">❌ "All to Home" 버튼 제거됨</li>
+            <li class="removed">❌ "Hint" 버튼 제거됨</li>
+            <li class="added">✨ "다시 시작" 버튼 추가됨 (동일한 게임 재시작)</li>
+            <li class="added">✨ "새 게임" 버튼이 햄버거 메뉴 밖으로 이동됨</li>
+            <li>✅ "자동 이동" 버튼으로 변경 (Safe Mode 기능 유지)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🎯 새로운 버튼 배치</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <span class="button-preview">☰ 메뉴</span>
+            <span class="button-preview">난이도 선택</span>
+            <span class="button-preview">🎮 새 게임</span>
+            <span class="button-preview">🔄 다시 시작</span>
+            <span class="button-preview">↩️ 실행 취소</span>
+            <span class="button-preview">🎯 자동 이동</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>💡 새로운 기능</h2>
+        <h3>1. 다시 시작 (Restart Same Game)</h3>
+        <ul>
+            <li>현재 게임과 동일한 카드 배치로 다시 시작</li>
+            <li>게임을 처음부터 다시 플레이 가능</li>
+            <li>게임이 시작되지 않았을 때는 비활성화</li>
+        </ul>
+        
+        <h3>2. 새 게임 확인 모달</h3>
+        <div class="modal-preview">
+            <strong>새 게임 시작</strong><br>
+            현재 게임을 포기하고 새 게임을 시작하시겠습니까?<br>
+            <button>계속하기</button> <button style="background: #4CAF50; color: white;">새 게임</button>
+        </div>
+        <ul>
+            <li>게임 진행 중 새 게임 클릭 시 확인 모달 표시</li>
+            <li>실수로 게임을 잃는 것을 방지</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🍔 햄버거 메뉴 내용</h2>
+        <ul>
+            <li>🎯 Safe Mode 토글</li>
+            <li>🎨 테마 선택</li>
+            <li class="removed">~~새 게임~~ (제거됨)</li>
+            <li class="removed">~~힌트~~ (제거됨)</li>
+        </ul>
+    </div>
+
+    <div class="section completed">
+        <h2>✔️ 모든 요청사항 완료</h2>
+        <ol>
+            <li>✅ "All to Home" 버튼 제거</li>
+            <li>✅ 동일한 게임 다시 시작 버튼 추가</li>
+            <li>✅ 힌트 버튼 제거</li>
+            <li>✅ 새 게임 버튼을 햄버거 메뉴 밖으로 이동</li>
+            <li>✅ 새 게임 클릭 시 확인 모달 추가</li>
+        </ol>
+    </div>
+
+    <script>
+        console.log('변경사항 테스트 페이지 로드됨');
+        console.log('모든 요청사항이 구현되었습니다:');
+        console.log('1. All to Home 버튼 제거 ✅');
+        console.log('2. 동일 게임 재시작 기능 추가 ✅');
+        console.log('3. 힌트 버튼 제거 ✅');
+        console.log('4. 새 게임 버튼 햄버거 메뉴 밖으로 이동 ✅');
+        console.log('5. 새 게임 확인 모달 추가 ✅');
+    </script>
+</body>
+</html>

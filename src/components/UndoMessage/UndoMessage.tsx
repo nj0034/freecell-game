@@ -9,14 +9,13 @@ const MessageContainer = styled(motion.div)<{ messageType: 'success' | 'warning'
   transform: translateX(-50%);
   background: ${props => 
     props.messageType === 'success' 
-      ? props.theme.primaryColor || '#4CAF50'
-      : props.theme.accentColor || '#ff6b6b'
+      ? '#4CAF50'
+      : '#ff6b6b'
   };
-  color: ${props => props.theme.buttonText};
+  color: white;
   padding: 15px 25px;
   border-radius: 12px;
-  box-shadow: 0 5px 20px ${props => props.theme.shadowColor};
-  backdrop-filter: blur(10px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
   z-index: 10000;
   max-width: 400px;
   text-align: center;
@@ -42,11 +41,13 @@ export const UndoMessage: React.FC<UndoMessageProps> = ({
     if (show) {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000); // 3초 후 자동으로 닫기
+      }, 1500); // 1.5초 후 자동으로 닫기
       
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+      };
     }
-  }, [show, onClose]);
+  }, [show, onClose]); // show와 onClose가 바뀔 때 재실행
 
   const messageVariants = {
     hidden: { 

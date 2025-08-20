@@ -185,34 +185,57 @@ export const Tableau: React.FC<TableauProps> = ({
         const destination = findMultiCardDestination(cards, cardIndex, columnIndex, gameState);
         
         if (destination) {
-          // 이동 가능한 수량 확인 (목적지 컬럼 인덱스 전달)
-          const moveCheck = canMoveMultipleCards(cards, cardIndex, gameState, destination.columnIndex);
-          
-          if (!moveCheck.canMove) {
-            // 경고 메시지 표시 및 shake 애니메이션
-            if (onWarning) {
-              onWarning(moveCheck.maxMovable, moveCheck.numCards);
+          // 프리셀로 이동하는 경우
+          if (destination.isFreecell) {
+            const fromLocation = { type: PileType.TABLEAU, index: columnIndex };
+            const toLocation = { type: PileType.FREECELL, index: destination.freecellIndex! };
+            
+            setIsAnimating(true);
+            try {
+              await moveSingleCardWithAnimation(
+                clickedCard,
+                fromLocation,
+                toLocation,
+                gameState,
+                setGameState,
+                150
+              );
+            } catch (error) {
+              console.error('Error during freecell move animation:', error);
+            } finally {
+              setIsAnimating(false);
             }
-            setShakingCardIndex(cardIndex);
-            return;
-          }
-          
-          // 순차적 카드 이동 애니메이션 실행
-          setIsAnimating(true);
-          try {
-            await moveCardsSequentially(
-              cards,
-              columnIndex,
-              destination.columnIndex,
-              cardIndex,
-              gameState,
-              setGameState,
-              { delay: 80, animationDuration: 150 }
-            );
-          } catch (error) {
-            console.error('Error during sequential card move:', error);
-          } finally {
-            setIsAnimating(false);
+          } else {
+            // 테이블로 컬럼으로 이동하는 경우
+            // 이동 가능한 수량 확인 (목적지 컬럼 인덱스 전달)
+            const moveCheck = canMoveMultipleCards(cards, cardIndex, gameState, destination.columnIndex);
+            
+            if (!moveCheck.canMove) {
+              // 경고 메시지 표시 및 shake 애니메이션
+              if (onWarning) {
+                onWarning(moveCheck.maxMovable, moveCheck.numCards);
+              }
+              setShakingCardIndex(cardIndex);
+              return;
+            }
+            
+            // 순차적 카드 이동 애니메이션 실행
+            setIsAnimating(true);
+            try {
+              await moveCardsSequentially(
+                cards,
+                columnIndex,
+                destination.columnIndex,
+                cardIndex,
+                gameState,
+                setGameState,
+                { delay: 80, animationDuration: 150 }
+              );
+            } catch (error) {
+              console.error('Error during sequential card move:', error);
+            } finally {
+              setIsAnimating(false);
+            }
           }
         } else {
           // 이동할 수 있는 곳이 없는 경우 shake 애니메이션

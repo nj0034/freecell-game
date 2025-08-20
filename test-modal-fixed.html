@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모달 수정 완료</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .modal-demo {
+            position: relative;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 200px;
+        }
+        .modal-content {
+            background: #ffffff;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 0, 0, 0.1);
+        }
+        .modal-title {
+            color: #333333;
+            font-size: 1.5em;
+            margin: 0 0 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .modal-message {
+            color: #555555;
+            margin: 0 0 25px 0;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            min-width: 100px;
+            transition: all 0.2s ease;
+        }
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333333;
+        }
+        .btn-cancel:hover {
+            background: #d0d0d0;
+            transform: translateY(-1px);
+        }
+        .btn-confirm {
+            background: #4CAF50;
+            color: #ffffff;
+        }
+        .btn-confirm:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 15px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .check {
+            color: #4CAF50;
+            font-size: 1.2em;
+        }
+        .highlight {
+            background: #4CAF50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ 모달 수정 완료!</h1>
+        
+        <div class="section">
+            <h2>🎨 모달 디자인 수정 사항</h2>
+            <div class="modal-demo">
+                <div class="modal-content">
+                    <div class="modal-title">게임 다시 시작</div>
+                    <div class="modal-message">현재 진행 상황을 포기하고 같은 게임을 처음부터 다시 시작하시겠습니까?</div>
+                    <div class="button-group">
+                        <button class="btn btn-cancel">계속하기</button>
+                        <button class="btn btn-confirm">다시 시작</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📍 모달 위치 조정</h2>
+            <ul class="feature-list">
+                <li>
+                    <span class="check">✅</span>
+                    <span>화면 중앙에서 약간 아래쪽으로 배치 (<span class="highlight">padding-top: 200px</span>)</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>게임 화면을 가리지 않으면서도 눈에 잘 띄는 위치</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🎨 색상 수정</h2>
+            <ul class="feature-list">
+                <li>
+                    <span class="check">✅</span>
+                    <span>배경: 완전한 흰색 (<span class="highlight">#ffffff</span>)</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>제목: 진한 회색 (<span class="highlight">#333333</span>)</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>메시지: 중간 회색 (<span class="highlight">#555555</span>)</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>확인 버튼: 녹색 (<span class="highlight">#4CAF50</span>)</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span>취소 버튼: 밝은 회색 (<span class="highlight">#e0e0e0</span>)</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🎮 제거된 기능</h2>
+            <ul class="feature-list">
+                <li>
+                    <span class="check">✅</span>
+                    <span><del>자동 이동 버튼</del> - 완전히 제거됨</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span><del>힌트 버튼</del> - 완전히 제거됨</span>
+                </li>
+                <li>
+                    <span class="check">✅</span>
+                    <span><del>All to Home 버튼</del> - 완전히 제거됨</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section" style="background: rgba(76, 175, 80, 0.2);">
+            <h2>✔️ 최종 버튼 구성</h2>
+            <ul class="feature-list">
+                <li><span class="check">✅</span> 햄버거 메뉴 (테마, Safe Mode)</li>
+                <li><span class="check">✅</span> 난이도 선택</li>
+                <li><span class="check">✅</span> 🎮 새 게임 (확인 모달 포함)</li>
+                <li><span class="check">✅</span> 🔄 다시 시작 (확인 모달 포함)</li>
+                <li><span class="check">✅</span> ↩️ 실행 취소</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        console.log('🎉 모달 수정 완료!');
+        console.log('✅ 배경색: 흰색 (#ffffff)');
+        console.log('✅ 텍스트 색상: 명확한 회색톤');
+        console.log('✅ 위치: padding-top: 200px');
+        console.log('✅ 자동 이동 버튼 제거 완료');
+    </script>
+</body>
+</html>
