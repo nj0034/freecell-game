@@ -132,11 +132,11 @@ export const DeadlockModal: React.FC<DeadlockModalProps> = ({
           >
             <Title>
               <WarningIcon>⚠️</WarningIcon>
-              더 이상 이동할 수 없습니다
+              No More Moves
             </Title>
             <Message>
-              현재 상태에서 이동 가능한 카드가 없습니다.<br />
-              실행 취소하거나 게임을 다시 시작해보세요.
+              There are no possible moves in the current state.<br />
+              Try undoing your last move or restart the game.
             </Message>
             <ButtonGroup>
               <Button
@@ -146,7 +146,7 @@ export const DeadlockModal: React.FC<DeadlockModalProps> = ({
                 whileHover={{ scale: canUndo ? 1.05 : 1 }}
                 whileTap={{ scale: canUndo ? 0.95 : 1 }}
               >
-                ↩️ 실행 취소
+                ↩️ Undo
               </Button>
               <Button
                 variant="restart"
@@ -154,7 +154,7 @@ export const DeadlockModal: React.FC<DeadlockModalProps> = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                🔄 다시 시작
+                🔄 Restart
               </Button>
             </ButtonGroup>
           </ModalContent>

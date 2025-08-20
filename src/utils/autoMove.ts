@@ -1,6 +1,7 @@
 import { Card, GameState, PileType, PileLocation } from '../types/game.types';
 import { canMoveCard, checkWinCondition } from './gameLogic';
 import { isSafeToAutoMove } from './safeAutoMove';
+import { calculateMoveScore } from './scoreSystem';
 
 // 카드의 자동 이동 위치 찾기
 export const findAutoMoveDestination = (
@@ -81,16 +82,20 @@ export const executeAutoMove = (
         // 파운데이션은 한 장씩만 이동
         if (movedCards.length === 1) {
           newState.foundations[toLocation.index].push(movedCards[0]);
-          newState.score += 10;
+          // Check if completing a suit (13 cards)
+          const isCompletingSuit = newState.foundations[toLocation.index].length === 13;
+          newState.score += calculateMoveScore('tableau', 'foundation', isCompletingSuit);
           
           // 파운데이션에 카드 추가 후 승리 조건 확인
           newState.isGameWon = checkWinCondition(newState.foundations);
         }
       } else if (toLocation.type === PileType.TABLEAU) {
+        const wasEmpty = newState.tableau[toLocation.index].length === 0;
         newState.tableau[toLocation.index].push(...movedCards);
-        newState.score += 5;
+        newState.score += calculateMoveScore('tableau', 'tableau', false, wasEmpty);
       } else if (toLocation.type === PileType.FREECELL && movedCards.length === 1) {
         newState.freeCells[toLocation.index] = movedCards[0];
+        newState.score += calculateMoveScore('tableau', 'freecell');
       }
     }
   } else if (fromLocation.type === PileType.FREECELL) {
@@ -100,13 +105,15 @@ export const executeAutoMove = (
       
       if (toLocation.type === PileType.FOUNDATION) {
         newState.foundations[toLocation.index].push(movedCard);
-        newState.score += 10;
+        const isCompletingSuit = newState.foundations[toLocation.index].length === 13;
+        newState.score += calculateMoveScore('freecell', 'foundation', isCompletingSuit);
         
         // 파운데이션에 카드 추가 후 승리 조건 확인
         newState.isGameWon = checkWinCondition(newState.foundations);
       } else if (toLocation.type === PileType.TABLEAU) {
+        const wasEmpty = newState.tableau[toLocation.index].length === 0;
         newState.tableau[toLocation.index].push(movedCard);
-        newState.score += 5;
+        newState.score += calculateMoveScore('freecell', 'tableau', false, wasEmpty);
       }
     }
   }

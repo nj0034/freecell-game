@@ -5,6 +5,7 @@ import { GameState } from '../types/game.types';
 import { cloneGameState } from '../utils/undoRedo';
 import { initializeGame } from '../utils/gameLogic';
 import { DifficultyLevel, difficultyConfigs } from '../utils/difficulty';
+import { ScoreAction, calculateWinBonus } from '../utils/scoreSystem';
 
 interface GameStore {
   // Current game state
@@ -21,6 +22,8 @@ interface GameStore {
   safeMode: boolean;
   lastUndoTime: number;
   isAutoMoving: boolean;
+  // Game time for scoring
+  gameStartTime: number;
   
   // Actions
   updateGameState: (newState: GameState | ((prev: GameState) => GameState)) => void;
@@ -51,6 +54,7 @@ export const useGameStore = create<GameStore>()(
       })(),
       lastUndoTime: 0,
       isAutoMoving: false,
+      gameStartTime: Date.now(),
 
       // Actions
       updateGameState: (newState) => {
@@ -104,8 +108,12 @@ export const useGameStore = create<GameStore>()(
           const newHistory = history.slice(0, -1); // Remove current state
           const previousState = newHistory[newHistory.length - 1]; // Get new current state
           
+          // Apply undo penalty to score
+          const undoState = cloneGameState(previousState);
+          undoState.score = Math.max(0, undoState.score + ScoreAction.UNDO_PENALTY);
+          
           set({
-            gameState: cloneGameState(previousState),
+            gameState: undoState,
             history: newHistory,
             consecutiveUndoCount: consecutiveUndoCount + 1,
             lastUndoTime: currentTime
@@ -136,7 +144,8 @@ export const useGameStore = create<GameStore>()(
           history: [cloneGameState(newGameState)],
           currentDifficulty: difficulty,
           consecutiveUndoCount: 0,
-          showWinAnimation: false
+          showWinAnimation: false,
+          gameStartTime: Date.now()
         });
       },
 
@@ -149,7 +158,8 @@ export const useGameStore = create<GameStore>()(
             history: [cloneGameState(restartedState)],
             consecutiveUndoCount: 0,
             showWinAnimation: false,
-            lastUndoTime: 0
+            lastUndoTime: 0,
+            gameStartTime: Date.now()
           });
         }
       },
@@ -177,7 +187,27 @@ useGameStore.subscribe(
   (isGameWon) => {
     if (isGameWon) {
       console.log('Game won detected - showing win animation');
-      useGameStore.getState().setShowWinAnimation(true);
+      const state = useGameStore.getState();
+      
+      // Calculate win bonus
+      const gameTimeSeconds = Math.floor((Date.now() - state.gameStartTime) / 1000);
+      const difficultyKey = Object.keys(DifficultyLevel).find(
+        key => DifficultyLevel[key as keyof typeof DifficultyLevel] === state.currentDifficulty
+      )?.toLowerCase() as 'easy' | 'medium' | 'hard' | 'expert' || 'medium';
+      
+      const winBonus = calculateWinBonus(
+        state.gameState.moves,
+        gameTimeSeconds,
+        difficultyKey
+      );
+      
+      // Update score with win bonus
+      state.updateGameState((prev) => ({
+        ...prev,
+        score: prev.score + winBonus
+      }));
+      
+      state.setShowWinAnimation(true);
     }
   }
 );

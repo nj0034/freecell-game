@@ -1,5 +1,6 @@
 import { Card, GameState, PileType } from '../types/game.types';
 import { canSelectCards, getMaxMovableCards } from './gameLogic';
+import { calculateMoveScore } from './scoreSystem';
 
 /**
  * 여러 카드를 한 번에 이동할 수 있는지 확인
@@ -73,12 +74,13 @@ export const moveMultipleCards = (
   
   // 대상 컬럼에 카드들 추가
   const targetColumn = [...newState.tableau[toColumnIndex]];
+  const wasEmpty = targetColumn.length === 0;
   targetColumn.push(...movedCards);
   newState.tableau[toColumnIndex] = targetColumn;
   
   // 이동 횟수와 점수 업데이트
   newState.moves += 1;
-  newState.score += 5;
+  newState.score += calculateMoveScore('tableau', 'tableau', false, wasEmpty);
   
   // 이동 기록 추가
   newState.moveHistory.push({

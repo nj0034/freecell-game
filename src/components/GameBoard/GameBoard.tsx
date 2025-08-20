@@ -60,6 +60,11 @@ export const GameBoard: React.FC = () => {
   const [gameTime, setGameTime] = useState(0);
   const [showDeadlockModal, setShowDeadlockModal] = useState(false);
   const [deadlockChecked, setDeadlockChecked] = useState(false);
+  
+  // Create stable close handler for warning message
+  const handleWarningClose = useCallback(() => {
+    setWarningMessage({ show: false, maxCards: 0, attemptedCards: 0 });
+  }, []);
 
   // 타이머 설정
   useEffect(() => {
@@ -521,7 +526,7 @@ export const GameBoard: React.FC = () => {
           show={warningMessage.show}
           maxCards={warningMessage.maxCards}
           attemptedCards={warningMessage.attemptedCards}
-          onClose={() => setWarningMessage({ show: false, maxCards: 0, attemptedCards: 0 })}
+          onClose={handleWarningClose}
         />
         
         <UndoMessage

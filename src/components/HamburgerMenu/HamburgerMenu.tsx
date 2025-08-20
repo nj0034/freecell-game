@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { themes } from '../../styles/themes';
+import { ScoringModal } from '../ScoringModal';
 
 const MenuContainer = styled.div`
   position: relative;
@@ -168,6 +169,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showThemes, setShowThemes] = useState(false);
+  const [showScoringModal, setShowScoringModal] = useState(false);
   const { themeName, setTheme, availableThemes } = useTheme();
 
 
@@ -198,6 +200,18 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
+            
+            <MenuItem
+              onClick={() => {
+                setShowScoringModal(true);
+                setIsOpen(false);
+              }}
+              whileHover={{ x: 4 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="icon">📊</span>
+              Scoring Rules
+            </MenuItem>
             
             <MenuItem
               onClick={onSafeModeToggle}
@@ -247,6 +261,11 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
           </MenuDropdown>
         )}
       </AnimatePresence>
+      
+      <ScoringModal
+        isOpen={showScoringModal}
+        onClose={() => setShowScoringModal(false)}
+      />
     </MenuContainer>
   );
 };

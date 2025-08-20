@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { GameState } from '../../types/game.types';
-import { DifficultyLevel } from '../../utils/difficulty';
+import { DifficultyLevel, difficultyConfigs } from '../../utils/difficulty';
 import { DifficultySelector } from '../DifficultySelector/DifficultySelector';
 import { HamburgerMenu } from '../HamburgerMenu/HamburgerMenu';
 import { ConfirmationModal } from '../ConfirmationModal/ConfirmationModal';
+import { formatScore, getScoreColor } from '../../utils/scoreSystem';
+import { useGameStore } from '../../store/gameStore';
 
 const ControlsContainer = styled.div`
   max-width: 1200px;
@@ -40,6 +42,7 @@ const ControlButton = styled(motion.button)`
   cursor: pointer;
   box-shadow: 0 4px 12px ${props => props.theme.shadowColor};
   transition: all 0.3s ease;
+  position: relative;
   
   &:disabled {
     opacity: 0.5;
@@ -50,6 +53,21 @@ const ControlButton = styled(motion.button)`
     background: ${props => props.theme.buttonHoverBackground};
     box-shadow: 0 6px 16px ${props => props.theme.shadowColor};
   }
+`;
+
+const UndoCount = styled.span`
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: ${props => props.theme.accentColor || '#ff6b6b'};
+  color: white;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 0.75em;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 `;
 
 const InfoGroup = styled.div`
@@ -107,6 +125,12 @@ export const GameControls: React.FC<GameControlsProps> = ({
   const [showNewGameModal, setShowNewGameModal] = useState(false);
   const [showRestartModal, setShowRestartModal] = useState(false);
   const [pendingDifficulty, setPendingDifficulty] = useState<DifficultyLevel | undefined>(undefined);
+  
+  // Get undo count from store
+  const consecutiveUndoCount = useGameStore(state => state.consecutiveUndoCount);
+  const difficultyConfig = difficultyConfigs[currentDifficulty];
+  const maxUndos = difficultyConfig.maxConsecutiveUndos;
+  const remainingUndos = maxUndos === -1 ? '∞' : Math.max(0, maxUndos - consecutiveUndoCount);
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -176,7 +200,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
           onClick={() => handleNewGameClick()}
           disabled={isAutoMoving}
         >
-          🎮 새 게임
+          🎮 New Game
         </ControlButton>
         
         <ControlButton
@@ -186,7 +210,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
           onClick={handleRestartClick}
           disabled={isAutoMoving || gameState.moves === 0}
         >
-          🔄 다시 시작
+          🔄 Restart
         </ControlButton>
         
         <ControlButton
@@ -196,7 +220,16 @@ export const GameControls: React.FC<GameControlsProps> = ({
           onClick={onUndo}
           disabled={!canUndoProp || isAutoMoving}
         >
-          ↩️ 실행 취소
+          ↩️ Undo
+          {maxUndos !== -1 && (
+            <UndoCount style={{
+              background: remainingUndos === 0 ? '#F44336' : 
+                         remainingUndos === 1 ? '#FF9800' : 
+                         '#4CAF50'
+            }}>
+              {remainingUndos}
+            </UndoCount>
+          )}
         </ControlButton>
       </ButtonGroup>
       
@@ -222,8 +255,9 @@ export const GameControls: React.FC<GameControlsProps> = ({
             initial={{ scale: 1.2 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.2 }}
+            style={{ color: getScoreColor(gameState.score) }}
           >
-            {gameState.score}
+            {formatScore(gameState.score)}
           </motion.span>
         </InfoItem>
         
@@ -235,24 +269,24 @@ export const GameControls: React.FC<GameControlsProps> = ({
       
       <ConfirmationModal
         isOpen={showNewGameModal}
-        title="새 게임 시작"
+        title="Start New Game"
         message={
           gameState.moves > 0 && !gameState.isGameWon
-            ? "현재 게임을 포기하고 새 게임을 시작하시겠습니까?"
-            : "새 게임을 시작하시겠습니까?"
+            ? "Are you sure you want to abandon the current game and start a new one?"
+            : "Start a new game?"
         }
-        confirmText="새 게임"
-        cancelText="취소"
+        confirmText="New Game"
+        cancelText="Cancel"
         onConfirm={confirmNewGame}
         onCancel={cancelNewGame}
       />
       
       <ConfirmationModal
         isOpen={showRestartModal}
-        title="게임 다시 시작"
-        message="현재 진행 상황을 포기하고 같은 게임을 처음부터 다시 시작하시겠습니까?"
-        confirmText="다시 시작"
-        cancelText="계속하기"
+        title="Restart Game"
+        message="Are you sure you want to restart the same game from the beginning?"
+        confirmText="Restart"
+        cancelText="Continue"
         onConfirm={confirmRestart}
         onCancel={cancelRestart}
       />

@@ -25,7 +25,7 @@ export const difficultyConfigs: Record<DifficultyLevel, DifficultyConfig> = {
     guaranteedMoves: 8,
     shuffleIntensity: 0.3,
     startingFreeCells: 4,
-    maxConsecutiveUndos: -1 // 무제한 undo
+    maxConsecutiveUndos: 5 // 5 undos
   },
   [DifficultyLevel.MEDIUM]: {
     name: 'Medium',
@@ -34,7 +34,7 @@ export const difficultyConfigs: Record<DifficultyLevel, DifficultyConfig> = {
     guaranteedMoves: 4,
     shuffleIntensity: 0.5,
     startingFreeCells: 4,
-    maxConsecutiveUndos: 10 // 연속 10번 undo
+    maxConsecutiveUndos: 3 // 3 undos
   },
   [DifficultyLevel.HARD]: {
     name: 'Hard',
@@ -43,7 +43,7 @@ export const difficultyConfigs: Record<DifficultyLevel, DifficultyConfig> = {
     guaranteedMoves: 2,
     shuffleIntensity: 0.7,
     startingFreeCells: 4,
-    maxConsecutiveUndos: 5 // 연속 5번 undo
+    maxConsecutiveUndos: 2 // 2 undos
   },
   [DifficultyLevel.EXPERT]: {
     name: 'Expert',
@@ -52,7 +52,7 @@ export const difficultyConfigs: Record<DifficultyLevel, DifficultyConfig> = {
     guaranteedMoves: 0,
     shuffleIntensity: 0.9,
     startingFreeCells: 3, // Expert mode starts with one less free cell
-    maxConsecutiveUndos: 3 // 연속 3번 undo
+    maxConsecutiveUndos: 1 // 1 undo only
   }
 };
 

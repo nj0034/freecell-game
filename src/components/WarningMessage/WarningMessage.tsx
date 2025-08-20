@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
 
@@ -60,15 +60,20 @@ export const WarningMessage: React.FC<WarningMessageProps> = ({
   attemptedCards,
   onClose
 }) => {
+  // Use useCallback to create a stable onClose reference
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
     if (show) {
       const timer = setTimeout(() => {
-        onClose();
+        handleClose();
       }, 3000); // 3초 후 자동으로 닫기
       
       return () => clearTimeout(timer);
     }
-  }, [show, onClose]);
+  }, [show, handleClose]);
 
   const messageVariants = {
     hidden: { 
@@ -104,16 +109,16 @@ export const WarningMessage: React.FC<WarningMessageProps> = ({
           initial="hidden"
           animate="visible"
           exit="exit"
-          onClick={onClose}
+          onClick={handleClose}
         >
           <MessageContent>
-            <Title>⚠️ 이동 제한!</Title>
+            <Title>⚠️ Move Limit!</Title>
             <Message>
-            {attemptedCards}장을 이동하려고 했지만,<br />
-            현재 최대 <MaxCards>{maxCards}장</MaxCards>만 이동할 수 있습니다.
+            Tried to move {attemptedCards} cards,<br />
+            but can only move <MaxCards>{maxCards} cards</MaxCards> at once.
           </Message>
           <Message style={{ fontSize: '0.9em', marginTop: '10px', opacity: 0.8 }}>
-            빈 프리셀과 빈 컬럼을 늘려보세요!
+            Free up some FreeCells or empty columns!
           </Message>
           </MessageContent>
         </MessageContainer>
