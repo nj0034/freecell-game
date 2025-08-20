@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { useTheme } from 'styled-components';
 import { Card, CardStack } from '../../types/game.types';
 import { DifficultyLevel } from '../../utils/difficulty';
 import { useGameStore } from '../../store/gameStore';
@@ -16,6 +17,8 @@ import { TestToggle } from '../TestToggle/TestToggle';
 import { WarningMessage } from '../WarningMessage/WarningMessage';
 import { UndoMessage } from '../UndoMessage/UndoMessage';
 import { KingFaceComponent } from '../KingFace/KingFace';
+import { SpaceBackground } from '../AnimatedBackgrounds/SpaceBackground';
+import { DeepSeaBackground } from '../AnimatedBackgrounds/DeepSeaBackground';
 import {
   BoardContainer,
   GameArea,
@@ -27,6 +30,7 @@ import {
 } from './GameBoard.styles';
 
 export const GameBoard: React.FC = () => {
+  const theme = useTheme() as any;
   const {
     gameState,
     showWinAnimation,
@@ -194,6 +198,10 @@ export const GameBoard: React.FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <BoardContainer>
+        {/* Animated backgrounds */}
+        {theme.useAnimatedBackground && (theme.name === 'Space' || theme.name === 'space') && <SpaceBackground />}
+        {theme.useAnimatedBackground && (theme.name === 'Deep Sea' || theme.name === 'deepsea') && <DeepSeaBackground />}
+        
         {showTestControls && (
           <TestControls 
             gameState={gameState}

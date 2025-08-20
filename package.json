@@ -1,7 +1,12 @@
 {
-  "name": "freecell-game",
-  "version": "0.1.0",
+  "name": "freecell-solitaire",
+  "version": "1.0.0",
   "private": true,
+  "homepage": ".",
+  "description": "FreeCell Solitaire - Classic card game with beautiful animations and multiple difficulty levels",
+  "keywords": ["freecell", "solitaire", "card game", "puzzle", "react", "typescript"],
+  "author": "FreeCell Solitaire",
+  "license": "MIT",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

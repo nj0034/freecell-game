@@ -13,7 +13,7 @@ export const findAutoMoveDestination = (
   // 1. 첫 번째 우선순위: 파운데이션 (홈셀)
   // 안전 이동 체크가 활성화된 경우 안전한 이동만 허용
   for (let i = 0; i < gameState.foundations.length; i++) {
-    if (canMoveCard(card, gameState.foundations[i], PileType.FOUNDATION)) {
+    if (canMoveCard(card, gameState.foundations[i], PileType.FOUNDATION, i)) {
       if (!checkSafeMove || isSafeToAutoMove(card, gameState)) {
         return { type: PileType.FOUNDATION, index: i };
       }
@@ -141,7 +141,7 @@ export const tryMoveToFoundation = (
 ): GameState | null => {
   // 파운데이션으로만 이동 시도
   for (let i = 0; i < gameState.foundations.length; i++) {
-    if (canMoveCard(card, gameState.foundations[i], PileType.FOUNDATION)) {
+    if (canMoveCard(card, gameState.foundations[i], PileType.FOUNDATION, i)) {
       // 안전 이동 체크가 필요한 경우에만 확인
       if (!checkSafeMove || isSafeToAutoMove(card, gameState)) {
         const toLocation = { type: PileType.FOUNDATION, index: i };

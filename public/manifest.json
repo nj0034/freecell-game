@@ -1,7 +1,8 @@
 {
-  "short_name": "프리셀",
-  "name": "프리셀 카드게임",
-  "description": "화려한 애니메이션이 돋보이는 프리셀 카드게임",
+  "short_name": "FreeCell",
+  "name": "FreeCell Solitaire",
+  "description": "Play FreeCell Solitaire with beautiful animations, multiple difficulty levels, and customizable themes",
+  "categories": ["games", "entertainment", "puzzle"],
   "icons": [
     {
       "src": "favicon.ico",
@@ -9,19 +10,48 @@
       "type": "image/x-icon"
     },
     {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    },
+    {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
   "theme_color": "#667eea",
   "background_color": "#764ba2",
-  "orientation": "landscape"
+  "orientation": "any",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "New Game",
+      "short_name": "New",
+      "description": "Start a new game",
+      "url": "/?action=new",
+      "icons": [{ "src": "favicon.svg", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "label": "Game Board"
+    }
+  ],
+  "lang": "en-US",
+  "dir": "ltr"
 }

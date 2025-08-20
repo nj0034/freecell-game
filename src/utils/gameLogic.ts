@@ -75,6 +75,9 @@ export const initializeGame = (difficulty: DifficultyLevel = DifficultyLevel.MED
   };
 };
 
+// Foundation suit order: Hearts (0), Diamonds (1), Clubs (2), Spades (3)
+export const FOUNDATION_SUIT_ORDER = [Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS, Suit.SPADES];
+
 // 카드 이동 가능 여부 확인
 export const canMoveCard = (
   card: Card,
@@ -84,7 +87,7 @@ export const canMoveCard = (
 ): boolean => {
   switch (targetType) {
     case PileType.FOUNDATION:
-      return canMoveToFoundation(card, targetPile as CardStack);
+      return canMoveToFoundation(card, targetPile as CardStack, targetIndex);
     case PileType.FREECELL:
       return canMoveToFreeCell(targetPile as Card | null);
     case PileType.TABLEAU:
@@ -95,7 +98,15 @@ export const canMoveCard = (
 };
 
 // 파운데이션으로 이동 가능 확인
-const canMoveToFoundation = (card: Card, foundation: CardStack): boolean => {
+const canMoveToFoundation = (card: Card, foundation: CardStack, foundationIndex?: number): boolean => {
+  // Check if card suit matches the designated foundation suit
+  if (foundationIndex !== undefined) {
+    const expectedSuit = FOUNDATION_SUIT_ORDER[foundationIndex];
+    if (card.suit !== expectedSuit) {
+      return false;
+    }
+  }
+  
   if (foundation.length === 0) {
     return card.rank === Rank.ACE;
   }

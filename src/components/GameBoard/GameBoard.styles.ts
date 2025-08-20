@@ -20,7 +20,7 @@ export const GameArea = styled.div`
   box-shadow: 0 8px 32px 0 ${props => props.theme.shadowColor};
   transition: all 0.3s ease;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 `;
 
 export const TopSection = styled.div`

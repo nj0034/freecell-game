@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useDrag } from 'react-dnd';
 import { Card as CardType, Suit } from '../../types/game.types';
 import { CardContainer, CardFace, CardBack, SuitSymbol, RankText } from './Card.styles';
-import { CardHighlight, getHighlightStyles, getHighlightTooltip } from '../../utils/cardHighlight';
+import { CardHighlight, getHighlightStyles } from '../../utils/cardHighlight';
 
 interface CardProps {
   card: CardType;
@@ -154,7 +154,6 @@ export const Card: React.FC<CardProps> = ({
           opacity: isDragging ? 0.5 : 1,
           ...( highlight && source === 'tableau' ? getHighlightStyles(highlight) : {} )
         }}
-        title={highlight && source === 'tableau' ? getHighlightTooltip(highlight) : undefined}
       >
         <CardContainer isSelected={false}>
           {card.faceUp ? (

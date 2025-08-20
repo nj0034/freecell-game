@@ -30,7 +30,7 @@ export const findAllMovesToFoundations = (gameState: GameState): Array<{
         if (topCard.faceUp) {
           // 이 카드가 어느 파운데이션으로 갈 수 있는지 확인
           for (let foundationIndex = 0; foundationIndex < 4; foundationIndex++) {
-            if (canMoveCard(topCard, simulatedState.foundations[foundationIndex], PileType.FOUNDATION)) {
+            if (canMoveCard(topCard, simulatedState.foundations[foundationIndex], PileType.FOUNDATION, foundationIndex)) {
               moves.push({
                 card: topCard,
                 from: { type: PileType.TABLEAU, index: colIndex },
@@ -60,7 +60,7 @@ export const findAllMovesToFoundations = (gameState: GameState): Array<{
         if (card) {
           // 이 카드가 어느 파운데이션으로 갈 수 있는지 확인
           for (let foundationIndex = 0; foundationIndex < 4; foundationIndex++) {
-            if (canMoveCard(card, simulatedState.foundations[foundationIndex], PileType.FOUNDATION)) {
+            if (canMoveCard(card, simulatedState.foundations[foundationIndex], PileType.FOUNDATION, foundationIndex)) {
               moves.push({
                 card: card,
                 from: { type: PileType.FREECELL, index: cellIndex },

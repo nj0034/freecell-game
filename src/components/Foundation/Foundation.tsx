@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
 import { Card } from '../Card/Card';
 import { CardStack, GameState, PileType, Suit } from '../../types/game.types';
-import { canMoveCard, checkWinCondition } from '../../utils/gameLogic';
+import { canMoveCard, checkWinCondition, FOUNDATION_SUIT_ORDER } from '../../utils/gameLogic';
 import { isSafeModeEnabled } from '../../utils/allToHomeHelper';
 import { findAllMovesToFoundations } from '../../utils/moveAllToFoundations';
 import { executeAutoMove } from '../../utils/autoMove';
@@ -42,8 +42,13 @@ const FoundationSlot = styled.div<{ isOver: boolean; canDrop: boolean; suit?: Su
     }}';
     position: absolute;
     font-size: 3em;
-    color: ${props => props.theme.text};
-    opacity: 0.1;
+    color: ${props => {
+      if (props.suit === Suit.HEARTS || props.suit === Suit.DIAMONDS) {
+        return props.theme.redSuitColor;
+      }
+      return props.theme.blackSuitColor;
+    }};
+    opacity: 0.2;
     z-index: 0;
   }
   
@@ -74,20 +79,18 @@ interface FoundationProps {
   setGameState: React.Dispatch<React.SetStateAction<GameState>>;
 }
 
-const suitOrder = [Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS, Suit.SPADES];
-
 export const Foundation: React.FC<FoundationProps> = ({
   cards,
   index,
   gameState,
   setGameState
 }) => {
-  const expectedSuit = cards.length > 0 ? cards[0].suit : suitOrder[index];
+  const expectedSuit = FOUNDATION_SUIT_ORDER[index];
   
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'CARD',
     canDrop: (item: any) => {
-      return canMoveCard(item.card, cards, PileType.FOUNDATION);
+      return canMoveCard(item.card, cards, PileType.FOUNDATION, index);
     },
     drop: (item: any) => {
       handleCardDrop(item);

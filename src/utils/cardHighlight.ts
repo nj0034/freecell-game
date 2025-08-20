@@ -134,28 +134,6 @@ export const getHighlightStyles = (highlight: CardHighlight): React.CSSPropertie
 };
 
 /**
- * 하이라이트 툴팁 텍스트 생성
- */
-export const getHighlightTooltip = (highlight: CardHighlight): string => {
-  if (!highlight.canMove) {
-    return '이동 불가: 프리셀 공간이 부족합니다';
-  }
-  
-  const { level, maxMovable, cardsInSequence } = highlight;
-  
-  switch (level) {
-    case 'high':
-      return `🟢 개별/연속 이동 가능: 이 카드부터 ${cardsInSequence}장 (최대 ${maxMovable}장 연속이동 가능)`;
-    case 'medium':
-      return `🟡 개별 이동만 가능: 프리셀 이용하여 개별 이동`;
-    case 'low':
-      return `🟠 연속 이동만 가능: ${cardsInSequence}장을 한번에 이동`;
-    default:
-      return '이동 불가';
-  }
-};
-
-/**
  * 게임 상태가 변경될 때 하이라이트 업데이트가 필요한지 확인
  */
 export const shouldUpdateHighlights = (

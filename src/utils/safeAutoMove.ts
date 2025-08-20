@@ -73,7 +73,7 @@ export const findSafeAutoMoves = (gameState: GameState): Array<{
             cards: [topCard]
           };
           
-          if (canMoveCard(topCard, gameState.foundations[foundationIndex], PileType.FOUNDATION)) {
+          if (canMoveCard(topCard, gameState.foundations[foundationIndex], PileType.FOUNDATION, foundationIndex)) {
             safeMoves.push({
               card: topCard,
               from: move.from,
@@ -97,7 +97,7 @@ export const findSafeAutoMoves = (gameState: GameState): Array<{
           cards: [card]
         };
         
-        if (canMoveCard(card, gameState.foundations[foundationIndex], PileType.FOUNDATION)) {
+        if (canMoveCard(card, gameState.foundations[foundationIndex], PileType.FOUNDATION, foundationIndex)) {
           safeMoves.push({
             card: card,
             from: move.from,
@@ -136,7 +136,7 @@ export const findSequentialMovesToFoundation = (
   gameState.tableau.forEach((column, columnIndex) => {
     if (column.length > 0) {
       const topCard = column[column.length - 1];
-      if (topCard.faceUp && canMoveCard(topCard, foundation, PileType.FOUNDATION)) {
+      if (topCard.faceUp && canMoveCard(topCard, foundation, PileType.FOUNDATION, foundationIndex)) {
         moves.push({
           card: topCard,
           from: { type: PileType.TABLEAU, index: columnIndex },
@@ -148,7 +148,7 @@ export const findSequentialMovesToFoundation = (
 
   // 프리셀의 카드 확인
   gameState.freeCells.forEach((card, cellIndex) => {
-    if (card && canMoveCard(card, foundation, PileType.FOUNDATION)) {
+    if (card && canMoveCard(card, foundation, PileType.FOUNDATION, foundationIndex)) {
       moves.push({
         card: card,
         from: { type: PileType.FREECELL, index: cellIndex },

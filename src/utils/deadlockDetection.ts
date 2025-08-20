@@ -17,7 +17,7 @@ export const isGameDeadlocked = (gameState: GameState): boolean => {
     if (card) {
       // 파운데이션으로 이동 가능한지
       for (let j = 0; j < gameState.foundations.length; j++) {
-        if (canMoveCard(card, gameState.foundations[j], PileType.FOUNDATION)) {
+        if (canMoveCard(card, gameState.foundations[j], PileType.FOUNDATION, j)) {
           return false; // 이동 가능한 카드가 있음
         }
       }
@@ -47,7 +47,7 @@ export const isGameDeadlocked = (gameState: GameState): boolean => {
     
     // 파운데이션으로 이동 가능한지
     for (let j = 0; j < gameState.foundations.length; j++) {
-      if (canMoveCard(topCard, gameState.foundations[j], PileType.FOUNDATION)) {
+      if (canMoveCard(topCard, gameState.foundations[j], PileType.FOUNDATION, j)) {
         return false; // 이동 가능한 카드가 있음
       }
     }
@@ -118,7 +118,7 @@ export const findPossibleMoves = (gameState: GameState): string[] => {
     const card = gameState.freeCells[i];
     if (card) {
       for (let j = 0; j < gameState.foundations.length; j++) {
-        if (canMoveCard(card, gameState.foundations[j], PileType.FOUNDATION)) {
+        if (canMoveCard(card, gameState.foundations[j], PileType.FOUNDATION, j)) {
           hints.push(`프리셀의 ${card.suit} ${card.rank}를 파운데이션으로 이동 가능`);
         }
       }
@@ -138,7 +138,7 @@ export const findPossibleMoves = (gameState: GameState): string[] => {
       const topCard = column[column.length - 1];
       
       for (let j = 0; j < gameState.foundations.length; j++) {
-        if (canMoveCard(topCard, gameState.foundations[j], PileType.FOUNDATION)) {
+        if (canMoveCard(topCard, gameState.foundations[j], PileType.FOUNDATION, j)) {
           hints.push(`${i+1}번째 열의 ${topCard.suit} ${topCard.rank}를 파운데이션으로 이동 가능`);
         }
       }
