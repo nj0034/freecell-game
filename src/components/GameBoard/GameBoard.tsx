@@ -12,8 +12,6 @@ import { Tableau } from '../Tableau/Tableau';
 import { Foundation } from '../Foundation/Foundation';
 import { FreeCell } from '../FreeCell/FreeCell';
 import { GameControls } from '../GameControls/GameControls';
-import { TestControls } from '../TestControls/TestControls';
-import { TestToggle } from '../TestToggle/TestToggle';
 import { WarningMessage } from '../WarningMessage/WarningMessage';
 import { UndoMessage } from '../UndoMessage/UndoMessage';
 import { KingFaceComponent } from '../KingFace/KingFace';
@@ -56,7 +54,6 @@ export const GameBoard: React.FC = () => {
     maxCards: 0,
     attemptedCards: 0
   });
-  const [showTestControls, setShowTestControls] = useState(false);
   const [undoMessage, setUndoMessage] = useState<{ show: boolean; type: 'success' | 'warning'; message: string }>({
     show: false,
     type: 'success',
@@ -204,17 +201,6 @@ export const GameBoard: React.FC = () => {
         {theme.useAnimatedBackground && (theme.name === 'Deep Sea' || theme.name === 'deepsea') && <DeepSeaBackground />}
         {theme.useAnimatedBackground && (theme.name === 'forest') && <ForestBackgroundDetailed />}
         
-        {showTestControls && (
-          <TestControls 
-            gameState={gameState}
-            setGameState={updateGameState}
-          />
-        )}
-        
-        <TestToggle 
-          onToggle={() => setShowTestControls(!showTestControls)}
-          isVisible={showTestControls}
-        />
         
         
         <motion.div
