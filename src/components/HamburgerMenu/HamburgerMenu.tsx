@@ -62,7 +62,7 @@ const MenuDropdown = styled(motion.div)`
   padding: 8px;
   box-shadow: 0 4px 20px ${props => props.theme.shadowColor};
   min-width: 200px;
-  z-index: 10000;
+  z-index: 9000;
 `;
 
 const MenuItem = styled(motion.button)`

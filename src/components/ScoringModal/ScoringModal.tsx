@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
 
@@ -107,7 +108,7 @@ export const ScoringModal: React.FC<ScoringModalProps> = ({
   isOpen,
   onClose
 }) => {
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <ModalOverlay
@@ -237,4 +238,6 @@ export const ScoringModal: React.FC<ScoringModalProps> = ({
       )}
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 };
