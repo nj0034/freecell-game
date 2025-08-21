@@ -81,9 +81,10 @@ export const GameBoard: React.FC = () => {
 
   // 데드락 감지
   useEffect(() => {
-    // 게임이 시작되지 않았거나 이미 이긴 경우 체크하지 않음
-    if (gameState.moves === 0 || gameState.isGameWon) {
+    // 게임이 시작되지 않았거나 이미 이긴 경우, 또는 승리 애니메이션 중인 경우 체크하지 않음
+    if (gameState.moves === 0 || gameState.isGameWon || showWinAnimation) {
       setDeadlockChecked(false);
+      setShowDeadlockModal(false); // 승리 시 데드락 모달 강제 닫기
       return;
     }
 
@@ -103,7 +104,7 @@ export const GameBoard: React.FC = () => {
     }, 500);
 
     return () => clearTimeout(checkTimer);
-  }, [gameState, deadlockChecked, showDeadlockModal]);
+  }, [gameState, deadlockChecked, showDeadlockModal, showWinAnimation]);
 
 
   const handleNewGame = (difficulty?: DifficultyLevel) => {
