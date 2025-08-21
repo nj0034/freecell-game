@@ -145,13 +145,11 @@ const ThemeOption = styled(motion.button)<{ isActive: boolean }>`
   }
 `;
 
-const ColorPreview = styled.div<{ color: string }>`
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-  background: ${props => props.color};
+const ThemeIcon = styled.span`
+  font-size: 16px;
   margin-right: 8px;
-  border: 1px solid ${props => props.theme.cardBorder};
+  width: 20px;
+  text-align: center;
 `;
 
 interface HamburgerMenuProps {
@@ -160,6 +158,21 @@ interface HamburgerMenuProps {
   safeMode: boolean;
   onSafeModeToggle: () => void;
 }
+
+const getThemeIcon = (themeName: string): string => {
+  switch(themeName) {
+    case 'classic': return '👑';
+    case 'nature': return '🌿';
+    case 'space': return '🚀';
+    case 'fantasy': return '✨';
+    case 'minimalist': return '⚪';
+    case 'neon': return '💫';
+    case 'ocean': return '🌊';
+    case 'vintage': return '📜';
+    case 'forest': return '🌲';
+    default: return '🎨';
+  }
+};
 
 export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
   onNewGame,
@@ -251,7 +264,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
                       whileHover={{ x: 2 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <ColorPreview color={themes[theme].background} />
+                      <ThemeIcon>{getThemeIcon(theme)}</ThemeIcon>
                       {themes[theme].name}
                     </ThemeOption>
                   ))}

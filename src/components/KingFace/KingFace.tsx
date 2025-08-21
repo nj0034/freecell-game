@@ -119,6 +119,55 @@ const DeepSeaKing = styled.div`
   }
 `;
 
+// Forest King Design (Ranger/Woodsman)
+const ForestKing = styled.div`
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(to bottom,
+    /* Ranger Hat */
+    #8B4513 0%, #A0522D 10%, #CD853F 20%,
+    /* Hat Band */
+    #228B22 20%, #228B22 25%,
+    /* Face Area */
+    rgba(253, 188, 180, 1) 25%, rgba(253, 188, 180, 1) 65%,
+    /* Ranger Vest */
+    #556B2F 65%, #6B8E23 100%
+  );
+  image-rendering: pixelated;
+  border: 2px solid #654321;
+  border-radius: 40% 40% 15% 15%;
+  box-shadow: 
+    inset 0 -3px 6px rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+  
+  /* Hat brim shadow */
+  &::before {
+    content: '';
+    position: absolute;
+    width: 75px;
+    height: 8px;
+    background: rgba(101, 67, 33, 0.6);
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 50%;
+  }
+  
+  /* Feather */
+  &::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 15px;
+    background: linear-gradient(to top, #8B4513, #228B22);
+    top: 2px;
+    right: 8px;
+    border-radius: 2px;
+    transform: rotate(15deg);
+  }
+`;
+
 // Shared Face Elements
 const PixelEye = styled.div<{ side: 'left' | 'right' }>`
   position: absolute;
@@ -304,6 +353,59 @@ const DivingBolts = styled.div`
   }
 `;
 
+// Forest theme specific elements
+const RangerBadge = styled.div`
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #FFD700;
+  border-radius: 50%;
+  top: 55px;
+  right: 10px;
+  border: 1px solid #B8860B;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #228B22;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+  }
+`;
+
+const ForestLeaves = styled.div`
+  position: absolute;
+  top: -2px;
+  left: -5px;
+  
+  &::before,
+  &::after {
+    content: '🍃';
+    position: absolute;
+    font-size: 8px;
+    animation: gentleFloat 4s ease-in-out infinite;
+  }
+  
+  &::before {
+    animation-delay: 0s;
+  }
+  
+  &::after {
+    top: 5px;
+    left: 8px;
+    animation-delay: 2s;
+  }
+  
+  @keyframes gentleFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-2px) rotate(5deg); }
+  }
+`;
+
 const Bubbles = styled.div`
   position: absolute;
   top: -10px;
@@ -377,14 +479,15 @@ export const KingFaceComponent: React.FC<KingFaceProps> = ({ className }) => {
 
   // Choose the appropriate king design based on theme
   const KingDesign = (theme.name === 'Space' || theme.name === 'space') ? SpaceKing : 
-                     (theme.name === 'Deep Sea' || theme.name === 'deepsea') ? DeepSeaKing : 
+                     (theme.name === 'Deep Sea' || theme.name === 'deepsea') ? DeepSeaKing :
+                     (theme.name === 'forest') ? ForestKing :
                      PixelKing;
 
   return (
     <KingContainer ref={kingRef} className={className}>
       <KingDesign>
         {/* Classic theme gets crown */}
-        {theme.name !== 'Space' && theme.name !== 'space' && theme.name !== 'Deep Sea' && theme.name !== 'deepsea' && (
+        {theme.name !== 'Space' && theme.name !== 'space' && theme.name !== 'Deep Sea' && theme.name !== 'deepsea' && theme.name !== 'forest' && (
           <>
             <CrownSpikes />
             <CrownGem />
@@ -404,6 +507,14 @@ export const KingFaceComponent: React.FC<KingFaceProps> = ({ className }) => {
           <>
             <DivingBolts />
             <Bubbles />
+          </>
+        )}
+        
+        {/* Forest theme specific elements */}
+        {theme.name === 'forest' && (
+          <>
+            <RangerBadge />
+            <ForestLeaves />
           </>
         )}
         

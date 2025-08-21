@@ -156,6 +156,47 @@ export const themes: Record<string, Theme> = {
       border: '2px solid #2c5f7c'
     },
     useAnimatedBackground: true
+  },
+  forest: {
+    name: 'forest',
+    background: '#228B22',
+    backgroundGradient: 'linear-gradient(to bottom, #87CEEB 0%, #98FB98 30%, #228B22 60%, #006400 100%)',
+    boardBackground: 'rgba(255, 255, 255, 0.1)',
+    cardBackground: 'linear-gradient(135deg, #faf8f0 0%, #f5f2e8 100%)',
+    cardBackImage: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJsZWF2ZXMiIHg9IjAiIHk9IjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PGVsbGlwc2UgY3g9IjIwIiBjeT0iMTUiIHJ4PSI4IiByeT0iMTIiIGZpbGw9IiMyMjhCMjIiIG9wYWNpdHk9IjAuMiIgdHJhbnNmb3JtPSJyb3RhdGUoMzAgMjAgMTUpIi8+PGVsbGlwc2UgY3g9IjEwIiBjeT0iMzAiIHJ4PSI2IiByeT0iMTAiIGZpbGw9IiMzMkNEMzIiIG9wYWNpdHk9IjAuMTUiIHRyYW5zZm9ybT0icm90YXRlKC0xNSAxMCAzMCkiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjI1IiByPSIzIiBmaWxsPSIjNjhBNTRBIiBvcGFjaXR5PSIwLjMiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiM0YTY3NDEiLz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2xlYXZlcykiLz48L3N2Zz4=)',
+    cardBorder: '1px solid #8B7355',
+    cardRadius: '12px',
+    cardFace: {
+      fontFamily: 'Optima, Candara, sans-serif',
+      fontSize: '1.4em',
+      fontWeight: '600',
+      textShadow: '0 1px 3px rgba(139, 115, 85, 0.3)',
+      patternUrl: 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik01LDUgTDEwLDEwIEw1LDE1IFoiIGZpbGw9IiNjZGRiYjEiIG9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==)',
+      patternOpacity: 0.1
+    },
+    redSuitColor: '#DC143C',
+    blackSuitColor: '#2F4F2F',
+    buttonBackground: 'linear-gradient(135deg, #8B7355 0%, #A0522D 100%)',
+    buttonHoverBackground: 'linear-gradient(135deg, #9B8365 0%, #B0623D 100%)',
+    buttonText: '#ffffff',
+    text: '#ffffff',
+    primaryColor: '#6B8E23',
+    secondaryColor: '#8B7355',
+    accentColor: '#FFD700',
+    shadowColor: 'rgba(107, 142, 35, 0.3)',
+    overlayBackground: 'rgba(34, 139, 34, 0.9)',
+    glowEffect: '0 0 20px rgba(255, 215, 0, 0.3)',
+    animationStyle: 'smooth',
+    foundationStyle: {
+      background: 'radial-gradient(ellipse, rgba(107, 142, 35, 0.15) 0%, transparent 70%)',
+      border: '2px solid #6B8E23',
+      symbol: '🌲'
+    },
+    freeCellStyle: {
+      background: 'linear-gradient(135deg, rgba(139, 115, 85, 0.15) 0%, rgba(107, 142, 35, 0.1) 100%)',
+      border: '2px solid #8B7355'
+    },
+    useAnimatedBackground: true
   }
 };
 

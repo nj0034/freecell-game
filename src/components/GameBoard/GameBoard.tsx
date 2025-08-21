@@ -19,6 +19,7 @@ import { UndoMessage } from '../UndoMessage/UndoMessage';
 import { KingFaceComponent } from '../KingFace/KingFace';
 import { SpaceBackground } from '../AnimatedBackgrounds/SpaceBackground';
 import { DeepSeaBackground } from '../AnimatedBackgrounds/DeepSeaBackground';
+import { ForestBackgroundDetailed } from '../AnimatedBackgrounds/ForestBackgroundDetailed';
 import {
   BoardContainer,
   GameArea,
@@ -201,6 +202,7 @@ export const GameBoard: React.FC = () => {
         {/* Animated backgrounds */}
         {theme.useAnimatedBackground && (theme.name === 'Space' || theme.name === 'space') && <SpaceBackground />}
         {theme.useAnimatedBackground && (theme.name === 'Deep Sea' || theme.name === 'deepsea') && <DeepSeaBackground />}
+        {theme.useAnimatedBackground && (theme.name === 'forest') && <ForestBackgroundDetailed />}
         
         {showTestControls && (
           <TestControls 
@@ -296,8 +298,8 @@ export const GameBoard: React.FC = () => {
               exit="hidden"
             >
               <Fireworks>
-                {/* 프리미엄 카드들 - 최고 품질 애니메이션 (8개) */}
-                {[...Array(8)].map((_, i) => (
+                {/* 프리미엄 카드들 - 최고 품질 애니메이션 (3개) */}
+                {[...Array(3)].map((_, i) => (
                   <motion.div
                     key={`premium-${i}`}
                     className="firework premium-card"
@@ -347,8 +349,8 @@ export const GameBoard: React.FC = () => {
                   />
                 ))}
                 
-                {/* 스탠다드 카드들 - 중간 품질 (12개) */}
-                {[...Array(12)].map((_, i) => (
+                {/* 스탠다드 카드들 - 중간 품질 (5개) */}
+                {[...Array(5)].map((_, i) => (
                   <motion.div
                     key={`standard-${i}`}
                     className="firework standard-card"
@@ -395,8 +397,8 @@ export const GameBoard: React.FC = () => {
                   />
                 ))}
                 
-                {/* 라이트 카드들 - 간단한 애니메이션 (20개) */}
-                {[...Array(20)].map((_, i) => (
+                {/* 라이트 카드들 - 간단한 애니메이션 (8개) */}
+                {[...Array(8)].map((_, i) => (
                   <motion.div
                     key={`light-${i}`}
                     className="firework light-card"

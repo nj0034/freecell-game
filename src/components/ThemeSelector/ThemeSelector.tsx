@@ -182,6 +182,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       case ThemeType.NEON: return '💫';
       case ThemeType.OCEAN: return '🌊';
       case ThemeType.VINTAGE: return '📜';
+      case ThemeType.FOREST: return '🌲';
       default: return '🎨';
     }
   };
@@ -196,6 +197,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       case ThemeType.NEON: return 'Cyberpunk style with glowing effects';
       case ThemeType.OCEAN: return 'Deep sea adventure theme';
       case ThemeType.VINTAGE: return 'Classic antique card design';
+      case ThemeType.FOREST: return 'Woodland adventure with nature elements';
       default: return '';
     }
   };

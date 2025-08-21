@@ -42,16 +42,16 @@ const swimFast = keyframes`
 `;
 
 const swimReverse = keyframes`
-  0% { transform: translateX(calc(100vw + 100px)) translateY(0px); }
-  100% { transform: translateX(-100px) translateY(-10px); }
+  0% { transform: translateX(0px) translateY(0px); }
+  100% { transform: translateX(calc(-100vw - 150px)) translateY(-10px); }
 `;
 
 const swimReverseZigzag = keyframes`
-  0% { transform: translateX(calc(100vw + 100px)) translateY(0px); }
-  25% { transform: translateX(75vw) translateY(20px); }
-  50% { transform: translateX(50vw) translateY(-20px); }
-  75% { transform: translateX(25vw) translateY(20px); }
-  100% { transform: translateX(-100px) translateY(0px); }
+  0% { transform: translateX(0px) translateY(0px); }
+  25% { transform: translateX(-25vw) translateY(20px); }
+  50% { transform: translateX(-50vw) translateY(-20px); }
+  75% { transform: translateX(-75vw) translateY(20px); }
+  100% { transform: translateX(calc(-100vw - 150px)) translateY(0px); }
 `;
 
 const swimZigzag = keyframes`
@@ -131,7 +131,7 @@ const SmallFish = styled.div<{
   height: 30px;
   top: ${props => props.top}%;
   left: ${props => (props.animationType === 'reverse' || props.animationType === 'reverseZigzag') ? 'auto' : '-50px'};
-  right: ${props => (props.animationType === 'reverse' || props.animationType === 'reverseZigzag') ? '-50px' : 'auto'};
+  right: ${props => (props.animationType === 'reverse' || props.animationType === 'reverseZigzag') ? '-100px' : 'auto'};
   animation: ${props => 
     props.animationType === 'zigzag' ? swimZigzag : 
     props.animationType === 'fast' ? swimFast : 
